@@ -1,0 +1,54 @@
+<div align="center">
+
+# DIVERSIFIED UNLEARNING
+
+## Unlearn in Context: Contrastive Alignment via Diversified Supervision for Diffusion Models
+
+</div>
+
+<br>
+
+<p align="center">
+	<img src="assets/main-figure.png" alt="Main figure" style="width:100%;" />
+</p>
+
+> ### Unlearn in Context: Contrastive Alignment via Diversified Supervision for Diffusion Models
+
+> Concept unlearning has emerged as a promising direction for reducing the risks of harmful content generation in text-to-image diffusion models by selectively erasing undesirable concepts from a model’s parameters. Existing approaches typically rely on keywords to identify the target concept to be unlearned. However, we show that this keyword-based formulation is inherently limited: a visual concept is multi-dimensional, can be expressed in diverse textual forms, and often overlaps with related concepts in the latent space. Consequently, keyword-based unlearning approaches, which imprecisely indicate the target concept via a static representation, are brittle against prompt-rephrasing jailbreaks and highly prone to collateral over-forgetting. To address these limitations, we propose **Diversified Unlearning**, a framework that exposes the erasure objective to natural context-dependent embedding variations. Rather than relying on simple prompt augmentation, we construct paired contextual formulations that introduce **implicit contrastive supervision** directly into the forgetting process, encouraging the model to isolate the target concept while keeping surrounding contexts invariant. Through extensive experiments across multiple benchmarks and state-of-the-art baselines, we demonstrate that integrating our framework as a lightweight add-on into existing unlearning pipelines yields notable improvements in both erasure effectiveness and concept retention, while significantly hardening models against adversarial recovery attacks
+
+
+
+## Enviroment setups
+```bash
+git clone https://github.com/TruongDuy2607/Diversified_Unlearning.git
+cd Diversified_Unlearning
+wget https://huggingface.co/CompVis/stable-diffusion-v-1-4-original/resolve/main/sd-v1-4-full-ema.ckpt && mv sd-v1-4-full-ema.ckpt models/erase/
+```
+Create conda enviroments and install the depended packages:
+```bash
+conda create -n dv-unlearn python=3.10
+conda activate dv-unlearn
+pip install -r requirements.txt
+```
+
+## Usage
+
+> **Note:** Diversified Unlearning is an add-on method that can be integrated with existing baseline approaches. Our experimental implementations compare the performance before and after combining Diversified Unlearning with these baseline methods.
+ ### 1. Training
+ We provide training and evaluation scripts in `train-scripts` and `eval-scripts` folders, with 4 base methods: [ESD](https://github.com/rohitgandikota/erasing), [UCE](https://github.com/rohitgandikota/unified-concept-editing), [AP](https://github.com/tuananhbui89/Erasing-Adversarial-Preservation), and [AGE](https://github.com/tuananhbui89/Adaptive-Guided-Erasure).
+
+ **For baseline ESD**
+ ```bash
+ CUDA_VISIBLE_DEVICES=0 python3 train-scripts/ESD/train-esd.py --train_method "xattn" --prompt "henry cavill"
+ ```
+ **For integrate Diversified Unlearning to ESD**
+ ```bash
+ CUDA_VISIBLE_DEVICES=0 python3 train-scripts/ESD/train-esd-diverse.py --prompt_csv "diverse_prompts/celebs/multi-level/training_prompts/level1_henry-cavill.csv" --seperator "," --train_method "xattn" --prompt "henry cavill" --level "level-1"
+ ```
+
+ The implementation for other baseline methods (UCE, AP, AGE) follows the same pattern. For detailed commands and configurations, please refer to [run.sh](run.sh).
+
+### 2. Generate images
+```bash
+CUDA_VISIBLE_DEVICES=0 python3 eval-scripts/generate-images.py --models_path=final-models --model_name=${model_name} --prompts_path ${path_to_prompt_file} --save_path "results" --num_samples 1 --from_case 0 --to_case -1
+```
