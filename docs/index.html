@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Primary Meta Tags -->
+  <meta name="title" content="Unlearn in Context: Contrastive Alignment via Diversified Supervision for Diffusion Models">
+  <meta name="description" content="Diversified Unlearning: a lightweight add-on that unlearns a concept through the company it keeps, improving erasure, preservation and robustness of text-to-image diffusion models.">
+  <meta name="keywords" content="concept unlearning, concept erasure, diffusion models, text-to-image, contrastive supervision, adversarial robustness, Stable Diffusion, WACV">
+  <meta name="author" content="Hao Pham, Duy Truong, Duy Khanh Dinh, Cuong Tien Nguyen, Tuan Anh Bui">
+  <meta name="robots" content="index, follow">
+  <meta name="language" content="English">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="VNPT AI">
+  <meta property="og:title" content="Unlearn in Context: Contrastive Alignment via Diversified Supervision for Diffusion Models">
+  <meta property="og:description" content="Unlearn a concept through the company it keeps: diverse contextual supervision for stronger erasure, better preservation and robustness.">
+  <meta property="og:url" content="https://vnpt-ai-official.github.io/WACV_diversified_unlearning/">
+  <meta property="og:image" content="https://vnpt-ai-official.github.io/WACV_diversified_unlearning/static/images/teaser.jpg">
+  <meta property="og:image:alt" content="Diversified Unlearning teaser figure">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Unlearn in Context: Contrastive Alignment via Diversified Supervision for Diffusion Models">
+  <meta name="twitter:description" content="Unlearn a concept through the company it keeps: diverse contextual supervision for stronger erasure, better preservation and robustness.">
+  <meta name="twitter:image" content="https://vnpt-ai-official.github.io/WACV_diversified_unlearning/static/images/teaser.jpg">
+
+  <!-- Academic/Research Specific -->
+  <meta name="citation_title" content="Unlearn in Context: Contrastive Alignment via Diversified Supervision for Diffusion Models">
+  <meta name="citation_author" content="Pham, Hao">
+  <meta name="citation_author" content="Truong, Duy">
+  <meta name="citation_author" content="Dinh, Duy Khanh">
+  <meta name="citation_author" content="Nguyen, Cuong Tien">
+  <meta name="citation_author" content="Bui, Tuan Anh">
+  <meta name="citation_conference_title" content="IEEE/CVF Winter Conference on Applications of Computer Vision (WACV)">
+  <meta name="citation_publication_date" content="2027">
+
+  <meta name="theme-color" content="#2563eb">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+
+  <title>Diversified Unlearning – Unlearn in Context | WACV 2027</title>
+
+  <link rel="icon" type="image/x-icon" href="static/images/favicon.ico">
+  <link rel="apple-touch-icon" href="static/images/favicon.ico">
+
+  <link rel="stylesheet" href="static/css/bulma.min.css">
+  <link rel="stylesheet" href="static/css/index.css">
+  <link rel="preload" href="static/css/fontawesome.all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript>
+    <link rel="stylesheet" href="static/css/fontawesome.all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  </noscript>
+  <link rel="preload" href="static/css/bulma-carousel.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="static/css/bulma-slider.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script defer src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="static/js/fontawesome.all.min.js"></script>
+  <script defer src="static/js/bulma-carousel.min.js"></script>
+  <script defer src="static/js/bulma-slider.min.js"></script>
+  <script defer src="static/js/index.js"></script>
+  <!-- Math rendering for the loss equations -->
+  <script>
+    window.MathJax = { tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] } };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+
+  <style>
+    /* wider content band (template default is 960px) */
+    .container.is-max-desktop { max-width: 1200px; }
+    .columns > .column { min-width: 0; }
+    .method-card { height: 100%; overflow-x: auto; }
+    .method-card mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width: 100%; font-size: 90%; }
+    .obs-box { background: rgba(37, 99, 235, 0.10); border: 1px solid rgba(37, 99, 235, 0.25); padding: 1.1rem 1.4rem; border-radius: 12px; height: 100%; }
+    .obs-box h4 { margin-bottom: .4rem; }
+    .results-table { width: 100%; margin: 0 auto; font-size: .92rem; }
+    .results-table th, .results-table td { text-align: center; vertical-align: middle; white-space: nowrap; }
+    .results-table td.div, .results-table th.div { background: #eef6ff; }
+    .table-caption { font-size: .92rem; color: #555; margin-top: .6rem; text-align: left; }
+    .fig-caption { font-size: .95rem; color: #444; margin-top: .6rem; }
+    .stat-tile { text-align: center; padding: 1rem; }
+    .stat-tile .num { font-size: 2.4rem; font-weight: 800; color: #2563eb; line-height: 1.1; }
+    .stat-tile .lbl { font-size: .95rem; color: #555; }
+    .scroll-x { overflow-x: auto; }
+    .teaser-caption { font-size: .95rem; line-height: 1.55; color: #444; margin-top: 1rem; }
+  </style>
+</head>
+<body>
+
+  <button class="scroll-to-top" onclick="scrollToTop()" title="Scroll to top" aria-label="Scroll to top">
+    <i class="fas fa-chevron-up"></i>
+  </button>
+
+  <main id="main-content">
+
+  <!-- ===================== HERO ===================== -->
+  <section class="hero">
+    <div class="hero-body">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
+          <div class="column has-text-centered">
+            <h1 class="title is-1 publication-title">Unlearn in Context: Contrastive Alignment via Diversified Supervision for Diffusion Models</h1>
+
+            <div class="is-size-5 publication-authors">
+              <span class="author-block">Hao Pham<sup>1,2*</sup>,</span>
+              <span class="author-block">Duy Truong<sup>1,2*</sup>,</span>
+              <span class="author-block">Duy Khanh Dinh<sup>1</sup>,</span>
+              <span class="author-block">Cuong Tien Nguyen<sup>1</sup>,</span>
+              <span class="author-block">Tuan Anh Bui</span>
+            </div>
+
+            <div class="is-size-5 publication-authors">
+              <span class="author-block"><sup>1</sup>VNPT AI, VNPT Group, Vietnam</span><br>
+              <span class="author-block"><sup>2</sup>Hanoi University of Science and Technology, Vietnam</span><br>
+              <span class="author-block">WACV 2027</span>
+              <span class="eql-cntrb"><small><br><sup>*</sup>Indicates Equal Contribution</small></span>
+            </div>
+
+            <div class="column has-text-centered">
+              <div class="publication-links">
+                <span class="link-block">
+                  <a href="static/pdfs/paper.pdf" target="_blank"
+                     class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon"><i class="fas fa-file-pdf"></i></span>
+                    <span>Paper</span>
+                  </a>
+                </span>
+
+                <span class="link-block">
+                  <a href="https://github.com/VNPT-AI-Official/WACV_diversified_unlearning" target="_blank"
+                     class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon"><i class="fab fa-github"></i></span>
+                    <span>Code</span>
+                  </a>
+                </span>
+
+                <!-- TODO: uncomment and fill in once the paper is on arXiv
+                <span class="link-block">
+                  <a href="https://arxiv.org/abs/XXXX.XXXXX" target="_blank"
+                     class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon"><i class="ai ai-arxiv"></i></span>
+                    <span>arXiv</span>
+                  </a>
+                </span>
+                -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== TEASER ===================== -->
+  <section class="hero teaser">
+    <div class="container is-max-desktop">
+      <div class="hero-body">
+        <img src="static/images/teaser.jpg" alt="Diversified Unlearning compared with keyword-based unlearning on erasure, preservation and recovery attacks" style="width:100%;"/>
+        <p class="teaser-caption has-text-centered">
+          <b>Diversified Unlearning</b> sits on top of state-of-the-art unlearning methods and brings three benefits at once:
+          stronger erasure of the target (Henry Cavill), better preservation of unrelated concepts, and stronger robustness
+          against recovery attacks (Ring-A-Bell on &ldquo;nudity&rdquo;, Fantastic Copyrighted Concepts on &ldquo;Mario&rdquo;).
+          Sensitive content is censored.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== ABSTRACT ===================== -->
+  <section class="section hero is-light">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-full">
+          <h2 class="title is-3">Abstract</h2>
+          <div class="content has-text-justified">
+            <p>
+              Concept unlearning has emerged as a promising direction for reducing the risks of harmful content generation in
+              text-to-image diffusion models by selectively erasing undesirable concepts from a model's parameters. Existing
+              approaches typically rely on keywords to identify the target concept to be unlearned. However, we show that this
+              keyword-based formulation is inherently limited: a visual concept is multi-dimensional, can be expressed in diverse
+              textual forms, and often overlaps with related concepts in the latent space. We therefore adopt a <i>contextual</i>
+              view: a concept should be unlearned through the company it keeps. Under this view, keyword-based unlearning
+              approaches, which imprecisely indicate the target concept via a fixed representation, are brittle against
+              prompt-rephrasing jailbreaks and highly prone to collateral over-forgetting. To address these limitations, we
+              propose <b>Diversified Unlearning</b>, a framework that exposes the erasure objective to natural context-dependent
+              embedding variations. Rather than relying on simple prompt augmentation, we construct paired contextual
+              formulations that introduce <b>implicit contrastive supervision</b> directly into the forgetting process,
+              encouraging the model to isolate the target concept while keeping surrounding contexts invariant. Through
+              extensive experiments across multiple benchmarks and state-of-the-art baselines, we demonstrate that integrating
+              our framework as a lightweight add-on into existing unlearning pipelines yields notable improvements in both
+              erasure effectiveness and concept retention, while significantly hardening models against adversarial recovery
+              attacks.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== HIGHLIGHTS ===================== -->
+  <section class="section">
+    <div class="container is-max-desktop">
+      <div class="columns is-multiline is-centered">
+        <div class="column is-one-quarter-desktop is-half-tablet stat-tile">
+          <div class="num">37 / 6 / 7</div>
+          <div class="lbl">wins / ties / losses over 50 erasure&ndash;preservation comparisons</div>
+        </div>
+        <div class="column is-one-quarter-desktop is-half-tablet stat-tile">
+          <div class="num">~50%</div>
+          <div class="lbl">lower GPT-score on celebrity erasure (ESD, AP)</div>
+        </div>
+        <div class="column is-one-quarter-desktop is-half-tablet stat-tile">
+          <div class="num">5</div>
+          <div class="lbl">settings: celebrities, objects, characters, nudity, art styles</div>
+        </div>
+        <div class="column is-one-quarter-desktop is-half-tablet stat-tile">
+          <div class="num">10</div>
+          <div class="lbl">unlearning methods (5 baselines &times; with / without ours)</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== MOTIVATION ===================== -->
+  <section class="section hero is-light">
+    <div class="container is-max-desktop">
+      <h2 class="title is-3 has-text-centered">Why keywords are not enough</h2>
+      <div class="content has-text-justified">
+        <p>
+          Existing unlearning methods describe a visual concept by an isolated keyword (&ldquo;Barack Obama&rdquo;,
+          &ldquo;a photo of Barack Obama&rdquo;). But a visual concept is not tied to a single lexical form: the same target can
+          appear across paraphrases, attributes, actions and surrounding scenes. Echoing the distributional principle
+          <i>&ldquo;You shall know a word by the company it keeps&rdquo;</i> (Firth, 1957), we argue that
+          <b>one shall unlearn a concept by the company it keeps</b>. A systematic analysis reveals two failure modes:
+        </p>
+      </div>
+      <div class="columns">
+        <div class="column">
+          <div class="obs-box content">
+            <h4>Observation 1 &middot; Imprecise target representation</h4>
+            <p>
+              Concepts are entangled with diverse linguistic contexts, forming context-dependent regions in the text-embedding
+              space rather than isolated points. Even after adding Gaussian noise to the embedding, the unlearned model still
+              generates the target (e.g. top-5 detection of <i>Church</i> stays at 91% at &alpha;=0.3). A fixed keyword only
+              suppresses the canonical token, leaving nearby variants untouched &rarr; vulnerable to
+              <b>prompt-rephrasing jailbreaks</b> and noise-based recovery attacks.
+            </p>
+          </div>
+        </div>
+        <div class="column">
+          <div class="obs-box content">
+            <h4>Observation 2 &middot; Ambiguous erasure signals in output space</h4>
+            <p>
+              The reverse process also produces co-occurring objects, attributes and backgrounds. Forcing the whole predicted
+              trajectory toward a generic anchor never says <i>which</i> visual factors belong to the target and which should be
+              preserved, so benign context is suppressed together with the target. One-sided prompt augmentation or adversarial
+              perturbations make this worse, leading to <b>over-forgetting</b> (visible PSR drops on multi-object erasure).
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== METHOD ===================== -->
+  <section class="section">
+    <div class="container is-max-desktop">
+      <h2 class="title is-3 has-text-centered">Method: Diversified Unlearning</h2>
+      <div class="content has-text-justified">
+        <p>
+          Diversified Unlearning pairs the target concept with natural contexts so that the context is <b>shared</b> by both
+          sides of the erasure transformation. This introduces an <b>implicit contrastive supervision</b>: the model is pushed
+          to change the target while keeping the context that the target and anchor have in common. It is a plug-and-play
+          add-on with two modules, one for each family of existing methods.
+        </p>
+      </div>
+
+      <div class="columns">
+        <div class="column">
+          <div class="box method-card content">
+            <h4><span class="tag is-info is-medium">Output-based</span>&nbsp; Diversified Prompting</h4>
+            <p>
+              Instead of mapping an isolated keyword \(c_e\) to an anchor \(c_a\), we sample natural contexts
+              \(c \sim \mathbf{C}\) and map \(\{c + c_e\} \rightarrow \{c + c_a\}\):
+            </p>
+            \[
+              \min_{\theta'} \mathbb{E}\Big[ \underbrace{\big\|\epsilon_{\theta'}(\tau(c{+}c_e)) - \epsilon_{\theta}(\tau(c{+}c_a))\big\|_2^2}_{L_1}
+              + \delta \cdot \underbrace{\big\|\epsilon_{\theta'}(\tau(c_p)) - \epsilon_{\theta}(\tau(c_p))\big\|_2^2}_{L_2} \Big]
+            \]
+            <p>
+              The shared context \(c\) cancels out in the difference, so the erasure direction concentrates on
+              <i>what to erase</i> rather than on the background (&delta; switches the preservation loss on for baselines that need it).
+            </p>
+          </div>
+        </div>
+        <div class="column">
+          <div class="box method-card content">
+            <h4><span class="tag is-warning is-medium">Attention-based</span>&nbsp; Diversified Embedding Mixup</h4>
+            <p>
+              Naively adding context to attention-based editing (UCE, MACE) causes severe over-forgetting because the text
+              encoder is biased by the context. We instead interpolate <b>token-wise</b>, only at the target token slots
+              \(\mathcal{I}(c_e)\):
+            </p>
+            \[
+              f(\tau(c_e), \mathbf{C})^i =
+              \begin{cases}
+                \tau(c_e)^i & i \notin \mathcal{I}(c_e)\\[2pt]
+                \frac{1}{|\mathbf{C}|}\sum_{c\in\mathbf{C}} \big(\alpha\,\tau(c_e)^i + (1-\alpha)\,\tau(c)^i\big) & i \in \mathcal{I}(c_e)
+              \end{cases}
+            \]
+            <p>
+              With &alpha; close to 1 the target identity is retained while injecting just enough contextual diversity. The
+              mixed contexts are also added to the <i>preservation</i> set, so surrounding features are explicitly protected.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="content has-text-justified">
+        <p>
+          <b>Context-set construction.</b> For every target concept an advanced LLM (GPT-4o / GPT-5) writes a small set of
+          natural prompts following a single unified prompt-design rule &mdash; e.g. everyday actions for celebrities
+          (&ldquo;a photo of Henry Cavill smiling&rdquo;), subject variations that keep the style descriptor for artistic styles,
+          and diverse subjects blended with the keyword for explicit concepts. A recognition model filters the generated
+          images, so no hyper-parameter tuning is needed per concept.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== RESULTS: QUALITATIVE ===================== -->
+  <section class="section hero is-light">
+    <div class="container is-max-desktop">
+      <h2 class="title is-3 has-text-centered">Qualitative Results</h2>
+      <div class="content has-text-justified">
+        <p>
+          Across celebrities, objects, copyrighted characters and explicit content, baselines (red) often still reveal the
+          target, while their diversified counterparts (green) erase it. Interestingly, for &ldquo;Mario&rdquo; the specific
+          character identity disappears while peripheral style primitives such as colours and textures are kept &mdash; a
+          <b>smooth erasure</b> rather than the destructive &ldquo;hard wash&rdquo; of keyword-based methods.
+        </p>
+      </div>
+      <figure class="has-text-centered">
+        <img src="static/images/fig2_qualitative.jpg" alt="Qualitative comparison across UCE, ESD, AP, AGE, ACE and their diversified versions" loading="lazy" style="width:100%;">
+        <figcaption class="fig-caption">
+          Diversified variants vs. their keyword-based baselines on four settings: celebrity, object, copyrighted character and explicit content.
+          &#10003; = target erased, &#10007; = target still generated.
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ===================== RESULTS: QUANTITATIVE ===================== -->
+  <section class="section">
+    <div class="container is-max-desktop">
+      <h2 class="title is-3 has-text-centered">Quantitative Results</h2>
+
+      <h3 class="title is-5">Celebrity erasure (10 celebrities simultaneously)</h3>
+      <div class="scroll-x">
+        <table class="table is-hoverable results-table">
+          <thead>
+            <tr>
+              <th rowspan="2">Method</th>
+              <th colspan="2">Erasure</th>
+              <th colspan="4">Preservation</th>
+            </tr>
+            <tr>
+              <th>CLIP-i&darr;</th><th>GPT&darr;</th>
+              <th>LPIPS&darr;</th><th>CLIP-i&uarr;</th><th>CLIP-t&uarr;</th><th>GPT&uarr;</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>ESD</td><td>65.98</td><td>11.78</td><td>0.66</td><td>62.59</td><td>24.25</td><td>31.68</td></tr>
+            <tr class="div"><td class="div"><b>Diversified-ESD</b></td><td class="div"><b>62.58</b></td><td class="div"><b>5.50</b></td><td class="div"><b>0.63</b></td><td class="div"><b>69.73</b></td><td class="div"><b>26.28</b></td><td class="div"><b>46.15</b></td></tr>
+            <tr><td>UCE</td><td>60.59</td><td>4.48</td><td>0.65</td><td>62.90</td><td>23.97</td><td><b>31.42</b></td></tr>
+            <tr><td class="div"><b>Diversified-UCE</b></td><td class="div"><b>58.55</b></td><td class="div"><b>2.83</b></td><td class="div"><b>0.64</b></td><td class="div"><b>66.92</b></td><td class="div"><b>24.57</b></td><td class="div">24.40</td></tr>
+            <tr><td>AP</td><td>61.14</td><td>13.55</td><td>0.79</td><td>49.31</td><td>21.34</td><td>14.97</td></tr>
+            <tr><td class="div"><b>Diversified-AP</b></td><td class="div"><b>60.78</b></td><td class="div"><b>6.10</b></td><td class="div"><b>0.68</b></td><td class="div"><b>70.50</b></td><td class="div"><b>27.09</b></td><td class="div"><b>51.15</b></td></tr>
+            <tr><td>AGE</td><td>60.68</td><td>18.84</td><td>0.83</td><td>42.31</td><td>17.96</td><td>6.98</td></tr>
+            <tr><td class="div"><b>Diversified-AGE</b></td><td class="div"><b>58.84</b></td><td class="div"><b>12.59</b></td><td class="div"><b>0.71</b></td><td class="div"><b>64.20</b></td><td class="div"><b>26.15</b></td><td class="div"><b>12.59</b></td></tr>
+            <tr><td>ACE</td><td>74.69</td><td>29.45</td><td>0.46</td><td>84.64</td><td><b>29.92</b></td><td><b>76.72</b></td></tr>
+            <tr><td class="div"><b>Diversified-ACE</b></td><td class="div"><b>68.67</b></td><td class="div"><b>13.53</b></td><td class="div"><b>0.39</b></td><td class="div"><b>85.91</b></td><td class="div">28.88</td><td class="div">75.05</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="table-caption">
+        Best of each baseline/diversified pair in bold. GPT-score is an identity-focused score computed with Qwen2.5-VL-72B (0&ndash;100).
+        Diversified-ESD and -AP roughly <b>halve the erasure GPT-score</b> while raising preservation.
+      </p>
+
+      <br>
+
+      <h3 class="title is-5">Explicit-content (nudity) erasure</h3>
+      <div class="scroll-x">
+        <table class="table is-hoverable results-table">
+          <thead>
+            <tr>
+              <th rowspan="2">Method</th>
+              <th>I2P &middot; NudeNet</th>
+              <th colspan="2">MS-COCO 30K</th>
+            </tr>
+            <tr><th>Total detections&darr;</th><th>FID&darr;</th><th>CLIP&uarr;</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>SD v1.4</td><td>743</td><td>14.04</td><td>31.34</td></tr>
+            <tr><td>UCE</td><td>253</td><td>14.85</td><td>31.27</td></tr>
+            <tr><td class="div"><b>Diversified-UCE</b></td><td class="div"><b>196</b></td><td class="div">14.87</td><td class="div">29.30</td></tr>
+            <tr><td>ESD</td><td>377</td><td>14.71</td><td>30.82</td></tr>
+            <tr><td class="div"><b>Diversified-ESD</b></td><td class="div"><b>212</b></td><td class="div"><b>14.05</b></td><td class="div"><b>31.06</b></td></tr>
+            <tr><td>AP</td><td>355</td><td>14.71</td><td>30.98</td></tr>
+            <tr><td class="div"><b>Diversified-AP</b></td><td class="div"><b>172</b></td><td class="div"><b>14.21</b></td><td class="div"><b>31.01</b></td></tr>
+            <tr><td>AGE</td><td>300</td><td>14.41</td><td><b>30.99</b></td></tr>
+            <tr><td class="div"><b>Diversified-AGE</b></td><td class="div"><b>244</b></td><td class="div"><b>13.82</b></td><td class="div">31.00</td></tr>
+            <tr><td>ACE</td><td>39</td><td>14.63</td><td><b>30.85</b></td></tr>
+            <tr><td class="div"><b>Diversified-ACE</b></td><td class="div"><b>26</b></td><td class="div">14.85</td><td class="div">30.60</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="table-caption">
+        Diversified-ESD and -AP cut total nudity detections by 44% and 52% relative to their baselines while keeping
+        COCO-30K FID / CLIP close to the original SD v1.4.
+      </p>
+    </div>
+  </section>
+
+  <!-- ===================== ROBUSTNESS ===================== -->
+  <section class="section hero is-light">
+    <div class="container is-max-desktop">
+      <h2 class="title is-3 has-text-centered">Robustness against Recovery Attacks</h2>
+      <div class="content has-text-justified">
+        <p>
+          Keyword-based unlearning often only <i>steers generation away</i> from the concept (guidance-based avoidance) and
+          leaves it recoverable. Because Diversified Unlearning removes the concept across its contextual company, it behaves
+          more like <i>destruction-based removal</i>. We test three attacks: <b>Ring-A-Bell</b> adversarial prompts (nudity),
+          <b>Indirect Recovery</b> through high-context prompts that omit the name &ldquo;Mario&rdquo;, and
+          <b>Noise-based attacks</b> on the ten-celebrity erasure models.
+        </p>
+      </div>
+
+      <div class="columns is-vcentered">
+        <div class="column is-half">
+          <div class="scroll-x">
+            <table class="table is-hoverable results-table">
+              <thead>
+                <tr><th rowspan="2">Method</th><th colspan="3">Ring-A-Bell ASR&darr;</th><th>IR GPT&darr;</th></tr>
+                <tr><th>K16</th><th>K38</th><th>K77</th><th>Mario</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>AP</td><td>46.32</td><td>48.42</td><td>54.47</td><td>38.13</td></tr>
+                <tr><td class="div"><b>Diversified-AP</b></td><td class="div"><b>38.95</b></td><td class="div"><b>41.05</b></td><td class="div"><b>38.95</b></td><td class="div"><b>33.75</b></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <br>
+          <div class="scroll-x">
+            <table class="table is-hoverable results-table">
+              <thead>
+                <tr><th rowspan="2"></th><th colspan="4">Noise-based attack, GPT&darr;</th></tr>
+                <tr><th>AP</th><th>ESD</th><th>AGE</th><th>UCE</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Baseline</td><td>39.63</td><td>28.19</td><td>33.00</td><td>2.00</td></tr>
+                <tr><td class="div"><b>Diversified</b></td><td class="div"><b>14.94</b></td><td class="div"><b>11.75</b></td><td class="div"><b>29.81</b></td><td class="div"><b>1.13</b></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="column is-half">
+          <figure class="has-text-centered">
+            <img src="static/images/fig5_trajectory.png" alt="Intermediate generations of AP and Diversified-AP under normal prompting and noise-based attacks" loading="lazy" style="width:100%;">
+            <figcaption class="fig-caption">
+              Intermediate generations for &ldquo;Margot Robbie&rdquo; erased with AP vs. Diversified-AP. Both look erased in
+              the final output under normal prompts, but under a noise-based attack the AP trajectory reconstructs the
+              target&rsquo;s latent features much more clearly &mdash; a sign of non-robust unlearning.
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== CONCLUSION ===================== -->
+  <section class="section hero is-light">
+    <div class="container is-max-desktop">
+      <h2 class="title is-3 has-text-centered">Conclusion</h2>
+      <div class="content has-text-justified">
+        <p>
+          We revisit the brittleness of keyword-based concept unlearning in text-to-image models. Guided by the principle that
+          a concept should be unlearned through the company it keeps, <b>Diversified Unlearning</b> injects implicit contrastive
+          supervision into the unlearning pipeline via structured context pairs. Through two plug-and-play modules &mdash;
+          <i>Diversified Prompting</i> and <i>Diversified Embedding Mixup</i> &mdash; it delivers stronger erasure, cleaner
+          retention of benign neighbours and improved robustness against advanced recovery attacks, without architectural overhead.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== CITATION ===================== -->
+  <section class="section" id="BibTeX">
+    <div class="container is-max-desktop content has-text-centered">
+      <h2 class="title">BibTeX</h2>
+      <p>Coming soon.</p>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="columns is-centered">
+        <div class="column is-8">
+          <div class="content">
+            <p>
+              This page was built using the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank">Academic Project Page Template</a>,
+              which was adopted from the <a href="https://nerfies.github.io" target="_blank">Nerfies</a> project page.
+              This website is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative
+              Commons Attribution-ShareAlike 4.0 International License</a>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  </main>
+</body>
+</html>
