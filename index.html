@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Diversified Unlearning: Unlearn in Context: Contrastive Alignment via Diversified Supervision for Diffusion Models | WACV</title>
+
+    <meta name="description"
+        content="Diversified Unlearning: a lightweight add-on that unlearns a concept through the company it keeps, improving erasure, preservation and robustness of text-to-image diffusion models (WACV).">
+    <meta property="og:title" content="Unlearn in Context: Contrastive Alignment via Diversified Supervision for Diffusion Models">
+    <meta property="og:description"
+        content="Diversified Unlearning: a lightweight add-on that unlearns a concept through the company it keeps, improving erasure, preservation and robustness of text-to-image diffusion models (WACV).">
+    <meta property="og:image" content="images/teaser.jpg">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-0.7 0 50.1 54.1'%3E%3Cdefs%3E%3CradialGradient id='f0' cx='0' cy='0' r='1' gradientUnits='userSpaceOnUse' gradientTransform='translate(24.35 27) scale(25.93 25.53)'%3E%3Cstop stop-color='%230047BB'/%3E%3Cstop offset='1' stop-color='%230072CE'/%3E%3C/radialGradient%3E%3ClinearGradient id='f1' x1='22.6' y1='20.6' x2='28.96' y2='20.6' gradientUnits='userSpaceOnUse'%3E%3Cstop stop-color='%230047BB'/%3E%3Cstop offset='0.19' stop-color='%23004CBD' stop-opacity='0.81'/%3E%3Cstop offset='0.41' stop-color='%23005AC3' stop-opacity='0.59'/%3E%3Cstop offset='0.64' stop-color='%230071CC' stop-opacity='0.36'/%3E%3Cstop offset='0.88' stop-color='%230091D9' stop-opacity='0.12'/%3E%3Cstop offset='1' stop-color='%2300A3E0' stop-opacity='0'/%3E%3C/linearGradient%3E%3ClinearGradient id='f2' x1='29.36' y1='18.04' x2='26.26' y2='6.04' gradientUnits='userSpaceOnUse'%3E%3Cstop stop-color='%230047BB'/%3E%3Cstop offset='0.19' stop-color='%23004CBD' stop-opacity='0.81'/%3E%3Cstop offset='0.41' stop-color='%23005AC3' stop-opacity='0.59'/%3E%3Cstop offset='0.64' stop-color='%230071CC' stop-opacity='0.36'/%3E%3Cstop offset='0.88' stop-color='%230091D9' stop-opacity='0.12'/%3E%3Cstop offset='1' stop-color='%2300A3E0' stop-opacity='0'/%3E%3C/linearGradient%3E%3ClinearGradient id='f3' x1='17.86' y1='25.27' x2='20.97' y2='19.8' gradientUnits='userSpaceOnUse'%3E%3Cstop stop-color='%230047BB'/%3E%3Cstop offset='0.19' stop-color='%23004CBD' stop-opacity='0.81'/%3E%3Cstop offset='0.41' stop-color='%23005AC3' stop-opacity='0.59'/%3E%3Cstop offset='0.64' stop-color='%230071CC' stop-opacity='0.36'/%3E%3Cstop offset='0.88' stop-color='%230091D9' stop-opacity='0.12'/%3E%3Cstop offset='1' stop-color='%2300A3E0' stop-opacity='0'/%3E%3C/linearGradient%3E%3ClinearGradient id='f4' x1='18.98' y1='18.23' x2='6.88' y2='14.86' gradientUnits='userSpaceOnUse'%3E%3Cstop stop-color='%230047BB'/%3E%3Cstop offset='0.19' stop-color='%23004CBD' stop-opacity='0.81'/%3E%3Cstop offset='0.41' stop-color='%23005AC3' stop-opacity='0.59'/%3E%3Cstop offset='0.64' stop-color='%230071CC' stop-opacity='0.36'/%3E%3Cstop offset='0.88' stop-color='%230091D9' stop-opacity='0.12'/%3E%3Cstop offset='1' stop-color='%2300A3E0' stop-opacity='0'/%3E%3C/linearGradient%3E%3ClinearGradient id='f5' x1='19.6' y1='31.65' x2='16.49' y2='26.18' gradientUnits='userSpaceOnUse'%3E%3Cstop stop-color='%230047BB'/%3E%3Cstop offset='0.19' stop-color='%23004CBD' stop-opacity='0.81'/%3E%3Cstop offset='0.41' stop-color='%23005AC3' stop-opacity='0.59'/%3E%3Cstop offset='0.64' stop-color='%230071CC' stop-opacity='0.36'/%3E%3Cstop offset='0.88' stop-color='%230091D9' stop-opacity='0.12'/%3E%3Cstop offset='1' stop-color='%2300A3E0' stop-opacity='0'/%3E%3C/linearGradient%3E%3ClinearGradient id='f6' x1='13.97' y1='27.17' x2='5.17' y2='36.01' gradientUnits='userSpaceOnUse'%3E%3Cstop stop-color='%230047BB'/%3E%3Cstop offset='0.19' stop-color='%23004CBD' stop-opacity='0.81'/%3E%3Cstop offset='0.41' stop-color='%23005AC3' stop-opacity='0.59'/%3E%3Cstop offset='0.64' stop-color='%230071CC' stop-opacity='0.36'/%3E%3Cstop offset='0.88' stop-color='%230091D9' stop-opacity='0.12'/%3E%3Cstop offset='1' stop-color='%2300A3E0' stop-opacity='0'/%3E%3C/linearGradient%3E%3ClinearGradient id='f7' x1='26.08' y1='33.37' x2='19.72' y2='33.37' gradientUnits='userSpaceOnUse'%3E%3Cstop stop-color='%230047BB'/%3E%3Cstop offset='0.19' stop-color='%23004CBD' stop-opacity='0.81'/%3E%3Cstop offset='0.41' stop-color='%23005AC3' stop-opacity='0.59'/%3E%3Cstop offset='0.64' stop-color='%230071CC' stop-opacity='0.36'/%3E%3Cstop offset='0.88' stop-color='%230091D9' stop-opacity='0.12'/%3E%3Cstop offset='1' stop-color='%2300A3E0' stop-opacity='0'/%3E%3C/linearGradient%3E%3ClinearGradient id='f8' x1='19.33' y1='35.93' x2='22.42' y2='47.92' gradientUnits='userSpaceOnUse'%3E%3Cstop stop-color='%230047BB'/%3E%3Cstop offset='0.19' stop-color='%23004CBD' stop-opacity='0.81'/%3E%3Cstop offset='0.41' stop-color='%23005AC3' stop-opacity='0.59'/%3E%3Cstop offset='0.64' stop-color='%230071CC' stop-opacity='0.36'/%3E%3Cstop offset='0.88' stop-color='%230091D9' stop-opacity='0.12'/%3E%3Cstop offset='1' stop-color='%2300A3E0' stop-opacity='0'/%3E%3C/linearGradient%3E%3ClinearGradient id='f9' x1='30.85' y1='28.74' x2='27.74' y2='34.2' gradientUnits='userSpaceOnUse'%3E%3Cstop stop-color='%230047BB'/%3E%3Cstop offset='0.19' stop-color='%23004CBD' stop-opacity='0.81'/%3E%3Cstop offset='0.41' stop-color='%23005AC3' stop-opacity='0.59'/%3E%3Cstop offset='0.64' stop-color='%230071CC' stop-opacity='0.36'/%3E%3Cstop offset='0.88' stop-color='%230091D9' stop-opacity='0.12'/%3E%3Cstop offset='1' stop-color='%2300A3E0' stop-opacity='0'/%3E%3C/linearGradient%3E%3ClinearGradient id='f10' x1='29.72' y1='35.78' x2='41.82' y2='39.14' gradientUnits='userSpaceOnUse'%3E%3Cstop stop-color='%230047BB'/%3E%3Cstop offset='0.19' stop-color='%23004CBD' stop-opacity='0.81'/%3E%3Cstop offset='0.41' stop-color='%23005AC3' stop-opacity='0.59'/%3E%3Cstop offset='0.64' stop-color='%230071CC' stop-opacity='0.36'/%3E%3Cstop offset='0.88' stop-color='%230091D9' stop-opacity='0.12'/%3E%3Cstop offset='1' stop-color='%2300A3E0' stop-opacity='0'/%3E%3C/linearGradient%3E%3ClinearGradient id='f11' x1='29.11' y1='22.32' x2='32.21' y2='27.79' gradientUnits='userSpaceOnUse'%3E%3Cstop stop-color='%230047BB'/%3E%3Cstop offset='0.19' stop-color='%23004CBD' stop-opacity='0.81'/%3E%3Cstop offset='0.41' stop-color='%23005AC3' stop-opacity='0.59'/%3E%3Cstop offset='0.64' stop-color='%230071CC' stop-opacity='0.36'/%3E%3Cstop offset='0.88' stop-color='%230091D9' stop-opacity='0.12'/%3E%3Cstop offset='1' stop-color='%2300A3E0' stop-opacity='0'/%3E%3C/linearGradient%3E%3ClinearGradient id='f12' x1='34.73' y1='26.8' x2='43.54' y2='17.96' gradientUnits='userSpaceOnUse'%3E%3Cstop stop-color='%230047BB'/%3E%3Cstop offset='0.19' stop-color='%23004CBD' stop-opacity='0.81'/%3E%3Cstop offset='0.41' stop-color='%23005AC3' stop-opacity='0.59'/%3E%3Cstop offset='0.64' stop-color='%230071CC' stop-opacity='0.36'/%3E%3Cstop offset='0.88' stop-color='%230091D9' stop-opacity='0.12'/%3E%3Cstop offset='1' stop-color='%2300A3E0' stop-opacity='0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M46.5 34.6C45.7 34.1 44.7 33.9 43.8 34C42.6 34.2 41.3 33.9 40.3 33.3C38.9 32.5 38 31.3 37.6 29.9C37.2 28.7 36.5 27.8 35.6 27C36.6 26.3 37.3 25.3 37.6 24.1C38 22.7 39 21.5 40.3 20.7C41.4 20.1 42.6 19.9 43.8 20C44.7 20.1 45.7 19.9 46.5 19.4C47.5 18.9 48.2 17.9 48.5 16.8C48.8 15.7 48.7 14.5 48.1 13.5C46.9 11.4 44.2 10.7 42.1 11.9C41.3 12.4 40.6 13.1 40.3 13.9C39.8 15 38.9 16 37.8 16.6C36.5 17.3 35 17.5 33.5 17.2C32.3 16.9 31.1 17 30 17.4C29.8 16.2 29.3 15.1 28.4 14.2C27.4 13.2 26.8 11.8 26.8 10.3C26.8 9.1 27.2 7.9 27.9 6.9C28.5 6.2 28.8 5.3 28.8 4.3C28.8 1.9 26.8 0 24.4 0C21.9 0 20 1.9 20 4.3C20 5.3 20.3 6.1 20.8 6.9C21.5 7.9 21.9 9.1 21.9 10.3C21.9 11.8 21.3 13.2 20.3 14.3C19.4 15.1 18.9 16.2 18.7 17.4C17.6 16.9 16.4 16.8 15.2 17.1C13.7 17.5 12.2 17.3 10.9 16.5C9.8 15.9 9 15 8.5 13.9C8.1 13.1 7.4 12.4 6.6 11.9C4.5 10.7 1.8 11.4 0.6 13.5C0 14.5-0.1 15.7 0.2 16.8C0.5 17.9 1.2 18.8 2.2 19.4C3 19.9 4 20.1 4.9 20C6.1 19.8 7.3 20.1 8.4 20.7C9.7 21.5 10.7 22.7 11.1 24.1C11.5 25.3 12.1 26.2 13.1 27C12.1 27.7 11.4 28.7 11.1 29.9C10.7 31.3 9.7 32.5 8.4 33.3C7.3 33.9 6.1 34.1 4.9 34C3.9 33.9 3 34.1 2.2 34.6C0.1 35.8-0.6 38.4 0.6 40.5C1.4 41.9 2.9 42.7 4.4 42.7C5.2 42.7 5.9 42.5 6.6 42.1C7.4 41.6 8.1 40.9 8.4 40.1C8.9 39 9.8 38 10.9 37.4C12.2 36.7 13.7 36.5 15.2 36.8C16.4 37.1 17.6 37 18.7 36.6C18.9 37.8 19.4 38.9 20.3 39.8C21.3 40.8 21.9 42.2 21.9 43.7C21.9 44.9 21.5 46.1 20.8 47.1C20.2 47.8 19.9 48.7 19.9 49.7C19.9 52.1 21.9 54 24.3 54C26.8 54 28.7 52.1 28.7 49.7C28.7 48.7 28.4 47.9 27.9 47.1C27.2 46.1 26.8 45 26.8 43.7C26.8 42.2 27.4 40.8 28.4 39.7C29.3 38.9 29.8 37.8 30 36.6C31.1 37.1 32.3 37.2 33.5 36.9C35 36.5 36.5 36.7 37.8 37.5C38.9 38.1 39.7 39 40.2 40.1C40.6 40.9 41.2 41.6 42.1 42.1C42.8 42.5 43.5 42.7 44.3 42.7C45.8 42.7 47.3 41.9 48.1 40.5C49.3 38.4 48.6 35.8 46.5 34.6ZM27.2 28.6C26.8 29.3 26.6 29.9 26.5 30.6C25.8 30.4 25.1 30.2 24.3 30.2C23.6 30.2 22.9 30.3 22.2 30.6C22.1 29.9 21.9 29.2 21.5 28.6C21.2 28 20.7 27.4 20.1 27C20.7 26.6 21.2 26 21.5 25.4C21.9 24.8 22.1 24.1 22.2 23.4C22.9 23.7 23.6 23.8 24.4 23.8C25.1 23.8 25.8 23.7 26.5 23.4C26.6 24.1 26.8 24.8 27.2 25.4C27.5 26.1 28 26.6 28.6 27C28 27.4 27.5 28 27.2 28.6ZM42.5 14.9C42.7 14.5 42.9 14.2 43.3 14C43.6 13.8 43.9 13.8 44.3 13.8C45 13.8 45.6 14.1 46 14.7C46.5 15.6 46.2 16.8 45.3 17.4C44.9 17.6 44.5 17.6 44.1 17.6C42.3 17.4 40.6 17.8 39.1 18.6C40.6 17.8 41.8 16.5 42.5 14.9ZM32.1 19.4C32.4 19.4 32.6 19.4 32.9 19.5L32.9 19.5C35 20 37.1 19.7 39 18.7C37.2 19.7 35.8 21.4 35.2 23.4C35 24.3 34.5 24.9 33.7 25.4C32.2 26.3 30.2 25.7 29.3 24.2C28.9 23.5 28.7 22.6 29 21.8C29.2 21 29.7 20.3 30.5 19.8C31 19.6 31.5 19.4 32.1 19.4ZM24.4 2.4C25.4 2.4 26.3 3.3 26.3 4.3C26.3 4.8 26.2 5.1 25.9 5.5C24.9 6.9 24.4 8.5 24.4 10.2C24.3 8.5 23.8 6.9 22.8 5.5C22.5 5.1 22.4 4.8 22.4 4.3C22.4 3.3 23.3 2.4 24.4 2.4ZM22 16L22 16C23.5 14.5 24.3 12.5 24.4 10.4C24.4 12.4 25.2 14.4 26.7 15.9C27.3 16.5 27.6 17.3 27.6 18.2C27.6 20 26.2 21.4 24.4 21.4C22.6 21.4 21.1 20 21.1 18.2C21.1 17.4 21.4 16.6 22 16ZM5.5 17.5C5.2 17.5 4.9 17.5 4.6 17.6C4.2 17.6 3.8 17.5 3.5 17.3C3 17.1 2.7 16.6 2.5 16.2C2.4 15.7 2.5 15.1 2.7 14.7C3 14.2 3.4 13.9 3.9 13.8C4.4 13.7 5 13.7 5.4 14C5.8 14.2 6 14.5 6.2 14.9C6.9 16.4 8.1 17.7 9.6 18.6C8.3 17.9 6.9 17.5 5.5 17.5ZM9.7 18.7C11.6 19.7 13.7 20 15.8 19.5C16.6 19.3 17.5 19.4 18.2 19.8C19 20.2 19.5 20.9 19.7 21.8C20 22.6 19.9 23.4 19.4 24.2C18.5 25.7 16.5 26.2 15 25.3C14.3 24.9 13.7 24.3 13.5 23.5L13.5 23.5C12.9 21.4 11.6 19.7 9.7 18.7ZM6.2 39.1C6 39.5 5.7 39.8 5.4 40C4.5 40.5 3.3 40.2 2.7 39.3C2.2 38.4 2.5 37.2 3.4 36.6C3.7 36.5 4.1 36.4 4.4 36.4C4.5 36.4 4.6 36.4 4.6 36.4C6.4 36.6 8.1 36.2 9.6 35.4C8.1 36.2 6.9 37.5 6.2 39.1ZM15.8 34.5L15.8 34.5C13.7 34 11.5 34.3 9.7 35.3C11.5 34.3 12.8 32.6 13.5 30.6C13.7 29.7 14.2 29.1 15 28.6C15.5 28.3 16 28.2 16.6 28.2C16.9 28.2 17.1 28.2 17.4 28.3C18.3 28.5 19 29.1 19.4 29.8C20.3 31.3 19.8 33.3 18.2 34.2C17.5 34.6 16.6 34.7 15.8 34.5ZM24.3 51.6C23.2 51.6 22.4 50.7 22.4 49.7C22.4 49.2 22.5 48.9 22.8 48.5C23.8 47.1 24.3 45.5 24.3 43.8C24.3 45.5 24.9 47.1 25.9 48.5C26.2 48.9 26.3 49.3 26.3 49.7C26.3 50.7 25.4 51.6 24.3 51.6ZM26.7 38L26.7 38C25.2 39.6 24.3 41.5 24.3 43.6C24.3 41.6 23.5 39.6 22 38.1C21.4 37.5 21.1 36.7 21.1 35.8C21.1 34.1 22.5 32.6 24.3 32.6C26.1 32.6 27.6 34.1 27.6 35.8C27.6 36.6 27.2 37.4 26.7 38ZM34.9 34.3C34.2 34.3 33.6 34.4 32.9 34.5C32.1 34.7 31.2 34.6 30.5 34.2C28.9 33.3 28.4 31.4 29.3 29.8C30.2 28.3 32.2 27.8 33.7 28.7C34.4 29.1 35 29.7 35.2 30.5L35.2 30.5C35.8 32.6 37.1 34.3 39 35.3C37.7 34.6 36.3 34.3 34.9 34.3ZM46 39.3C45.4 40.2 44.2 40.5 43.3 40C42.9 39.8 42.6 39.5 42.5 39.1C41.8 37.6 40.6 36.3 39.1 35.4C40.6 36.3 42.3 36.6 44.1 36.4C44.5 36.4 44.9 36.5 45.2 36.7C46.2 37.2 46.5 38.4 46 39.3Z' fill='url(%23f0)'/%3E%3Cpath d='M14.2 13.4C12.9 13.4 11.7 12.7 11.1 11.6C10.6 10.8 10.5 9.8 10.7 8.9C11 8 11.6 7.2 12.4 6.7C13 6.4 13.6 6.3 14.2 6.3C15.5 6.3 16.7 7 17.4 8.1C18.4 9.8 17.8 12 16.1 13C15.5 13.3 14.9 13.4 14.2 13.4Z' fill='%2359CBE8'/%3E%3Cpath d='M7.4 28.8C6.7 29.9 5.5 30.6 4.2 30.6C3.2 30.6 2.3 30.3 1.6 29.6C1 28.9 0.6 28 0.6 27C0.6 26.4 0.7 25.8 1.1 25.3C1.7 24.1 2.9 23.5 4.2 23.5C6.2 23.5 7.9 25.1 7.9 27C7.9 27.7 7.7 28.3 7.4 28.8Z' fill='%2359CBE8'/%3E%3Cpath d='M17.5 42.4C18.1 43.5 18.1 44.9 17.5 46C17 46.8 16.2 47.4 15.3 47.6C14.3 47.9 13.3 47.8 12.5 47.3C11.9 47 11.5 46.5 11.2 46C10.5 44.9 10.5 43.5 11.2 42.4C12.2 40.7 14.4 40.1 16.1 41.1C16.7 41.4 17.1 41.9 17.5 42.4Z' fill='%2359CBE8'/%3E%3Cpath d='M34.4 40.6C35.7 40.6 37 41.3 37.6 42.4C38.1 43.2 38.2 44.2 38 45.1C37.7 46 37.1 46.8 36.3 47.3C35.7 47.6 35.1 47.7 34.5 47.7C33.2 47.7 31.9 47 31.3 45.9C30.3 44.2 30.9 42 32.6 41C33.2 40.7 33.8 40.6 34.4 40.6Z' fill='%2359CBE8'/%3E%3Cpath d='M41.3 25.2C42 24.1 43.2 23.4 44.5 23.4C45.5 23.4 46.4 23.7 47.1 24.4C47.7 25.1 48.1 26 48.1 27C48.1 27.6 47.9 28.2 47.6 28.7C47 29.9 45.8 30.5 44.5 30.5C42.5 30.5 40.8 28.9 40.8 27C40.8 26.3 41 25.7 41.3 25.2Z' fill='%2359CBE8'/%3E%3Cpath d='M31.2 11.6C30.6 10.5 30.6 9.1 31.2 8C31.7 7.2 32.5 6.6 33.4 6.4C34.4 6.1 35.4 6.2 36.2 6.7C36.7 7 37.2 7.5 37.5 8C38.2 9.1 38.2 10.5 37.5 11.6C36.5 13.3 34.3 13.9 32.6 12.9C32 12.6 31.5 12.1 31.2 11.6Z' fill='%2359CBE8'/%3E%3Cpath d='M30 17.4C29.7 17.5 29.5 17.6 29.3 17.8C28.4 18.3 27.6 19 27.1 19.9C26.6 20.8 25.5 21.4 24.4 21.4C23.1 21.4 22.1 20.7 21.5 19.7L21.6 19.8C21.8 20.2 22 20.7 22.1 21.1C22.3 21.9 22.4 22.6 22.2 23.4C22.9 23.6 23.6 23.8 24.4 23.8C25.1 23.8 25.8 23.7 26.5 23.4C28.6 22.6 30.1 20.6 30.1 18.2C30.1 17.9 30 17.7 30 17.4Z' fill='url(%23f1)'/%3E%3Cpath d='M29.3 17.8C29.5 17.6 29.7 17.5 30 17.4C29.8 16.2 29.3 15.1 28.4 14.2C27.4 13.2 26.8 11.8 26.8 10.3C26.8 9.1 27.2 7.9 27.9 6.9C28.5 6.2 28.8 5.3 28.8 4.3C28.8 1.9 26.8 0 24.4 0V2.4C25.4 2.4 26.3 3.3 26.3 4.3C26.3 4.8 26.2 5.1 25.9 5.5C24.9 6.9 24.4 8.5 24.4 10.2V10.4C24.4 12.4 25.2 14.4 26.7 15.9C27.3 16.5 27.6 17.3 27.6 18.2C27.6 18.8 27.4 19.4 27.1 19.9L27.1 19.9C27.6 19 28.4 18.3 29.3 17.8Z' fill='url(%23f2)'/%3E%3Cpath d='M18.7 17.4C18.7 17.6 18.7 17.9 18.7 18.2C18.7 19.2 18.9 20.2 19.5 21.1C20 22 20 23.2 19.4 24.2C18.8 25.2 17.7 25.8 16.5 25.8L16.6 25.8C17.1 25.8 17.6 25.8 18.1 26C18.8 26.2 19.5 26.5 20.1 27C20.7 26.5 21.2 26 21.6 25.4C21.9 24.7 22.1 24.1 22.3 23.4C22.6 21.2 21.5 18.9 19.5 17.7C19.2 17.6 19 17.5 18.7 17.4Z' fill='url(%23f3)'/%3E%3Cpath d='M18.7 18.2C18.7 17.9 18.7 17.6 18.7 17.4C17.6 16.9 16.4 16.8 15.2 17.1C13.7 17.5 12.2 17.3 10.9 16.5C9.8 15.9 9 15 8.5 13.9C8.1 13 7.5 12.3 6.6 11.9C4.5 10.7 1.8 11.4 0.6 13.5L2.7 14.7C3.3 13.8 4.5 13.4 5.4 14C5.8 14.2 6.1 14.5 6.2 14.9C6.9 16.4 8.1 17.7 9.6 18.6L9.7 18.6C11.6 19.7 13.7 20 15.8 19.5C16.6 19.3 17.5 19.4 18.2 19.8C18.8 20.1 19.2 20.5 19.5 21L19.5 21C19 20.2 18.7 19.2 18.7 18.2Z' fill='url(%23f4)'/%3E%3Cpath d='M13.1 26.9C13.3 27.1 13.5 27.3 13.8 27.4C14.7 27.9 15.7 28.2 16.7 28.2C17.8 28.2 18.8 28.8 19.4 29.8C20 30.8 20 32.1 19.4 33L19.4 32.9C19.7 32.5 20 32.2 20.3 31.8C20.9 31.3 21.5 30.9 22.2 30.6C22.1 29.9 21.9 29.2 21.5 28.6C21.2 27.9 20.7 27.4 20.1 27C18.3 25.6 15.8 25.3 13.7 26.5C13.5 26.6 13.3 26.8 13.1 26.9Z' fill='url(%23f5)'/%3E%3Cpath d='M13.8 27.4C13.5 27.3 13.3 27.1 13.1 26.9C12.1 27.7 11.4 28.7 11.1 29.9C10.7 31.3 9.7 32.5 8.4 33.2C7.3 33.8 6.1 34.1 4.9 34C4 33.9 3 34.1 2.2 34.5C0.1 35.7-0.6 38.4 0.6 40.5L2.7 39.3C2.2 38.3 2.5 37.2 3.4 36.6C3.8 36.4 4.2 36.3 4.6 36.4C6.4 36.5 8.1 36.2 9.6 35.4L9.7 35.3C11.5 34.2 12.9 32.6 13.5 30.5C13.7 29.7 14.2 29 15 28.6C15.5 28.3 16.1 28.2 16.7 28.2L16.7 28.2C15.7 28.2 14.7 27.9 13.8 27.4Z' fill='url(%23f6)'/%3E%3Cpath d='M18.7 36.6C18.9 36.5 19.2 36.3 19.4 36.2C20.3 35.7 21.1 35 21.6 34.1C22.1 33.2 23.2 32.6 24.3 32.6C25.5 32.6 26.6 33.3 27.2 34.3L27.1 34.2C26.9 33.7 26.7 33.3 26.6 32.8C26.4 32.1 26.3 31.3 26.4 30.6C25.8 30.3 25.1 30.2 24.3 30.2C23.6 30.2 22.9 30.3 22.2 30.6C20.1 31.4 18.6 33.4 18.6 35.8C18.6 36 18.6 36.3 18.7 36.6Z' fill='url(%23f7)'/%3E%3Cpath d='M19.4 36.2C19.2 36.3 18.9 36.5 18.7 36.6C18.9 37.8 19.4 38.9 20.3 39.7C21.3 40.8 21.9 42.2 21.9 43.7C21.9 44.9 21.5 46.1 20.8 47.1C20.2 47.8 19.9 48.7 19.9 49.6C19.9 52 21.9 54 24.3 54V51.6C23.2 51.6 22.4 50.7 22.4 49.6C22.4 49.2 22.5 48.8 22.7 48.5C23.8 47.1 24.3 45.5 24.3 43.8V43.6C24.3 41.5 23.5 39.6 22 38C21.4 37.4 21.1 36.6 21.1 35.8C21.1 35.2 21.3 34.6 21.6 34.1L21.5 34.1C21 35 20.3 35.7 19.4 36.2Z' fill='url(%23f8)'/%3E%3Cpath d='M30 36.6C30 36.4 30 36.1 30 35.8C30 34.8 29.8 33.8 29.3 33C28.7 32 28.7 30.8 29.3 29.8C29.9 28.8 31 28.2 32.2 28.3L32.1 28.2C31.6 28.2 31.1 28.2 30.6 28C29.9 27.8 29.2 27.5 28.6 27C28 27.5 27.5 28 27.2 28.6C26.8 29.3 26.6 29.9 26.5 30.6C26.1 32.8 27.2 35.1 29.2 36.3C29.5 36.4 29.7 36.5 30 36.6Z' fill='url(%23f9)'/%3E%3Cpath d='M30 35.8C30 36.1 30 36.4 30 36.6C31.1 37.1 32.4 37.2 33.5 36.9C35 36.5 36.5 36.7 37.8 37.5C38.9 38.1 39.7 39 40.2 40.1C40.6 41 41.3 41.7 42.1 42.1C44.2 43.3 46.9 42.6 48.1 40.5L46 39.3C45.4 40.2 44.2 40.6 43.3 40C42.9 39.8 42.7 39.5 42.5 39.1C41.8 37.6 40.6 36.3 39.1 35.4L39 35.4C37.2 34.3 35 34 32.9 34.5C32.1 34.7 31.2 34.6 30.5 34.2C29.9 33.9 29.5 33.5 29.3 33L29.2 33C29.8 33.8 30 34.8 30 35.8Z' fill='url(%23f10)'/%3E%3Cpath d='M35.6 27C35.4 26.9 35.2 26.7 34.9 26.6C34 26.1 33 25.8 32 25.8C30.9 25.8 29.9 25.2 29.3 24.2C28.7 23.2 28.8 21.9 29.4 20.9L29.3 21C29 21.4 28.8 21.8 28.4 22.2C27.8 22.7 27.2 23.1 26.5 23.4C26.6 24.1 26.8 24.8 27.2 25.4C27.6 26.1 28 26.6 28.6 27C30.4 28.4 32.9 28.7 35 27.5C35.2 27.3 35.4 27.2 35.6 27Z' fill='url(%23f11)'/%3E%3Cpath d='M34.9 26.6C35.2 26.7 35.4 26.9 35.6 27C36.6 26.3 37.3 25.3 37.6 24.1C38 22.7 39 21.5 40.3 20.8C41.4 20.1 42.6 19.9 43.8 20C44.8 20.1 45.7 19.9 46.5 19.5C48.6 18.3 49.3 15.6 48.1 13.5L46 14.7C46.5 15.6 46.2 16.8 45.3 17.4C44.9 17.6 44.5 17.6 44.1 17.6C42.4 17.4 40.6 17.8 39.1 18.6L39 18.7C37.2 19.8 35.9 21.4 35.3 23.5C35 24.3 34.5 25 33.7 25.4C33.2 25.7 32.6 25.8 32 25.8L32 25.8C33 25.8 34 26.1 34.9 26.6Z' fill='url(%23f12)'/%3E%3C/svg%3E">
+
+    <!-- Fonts: Newsreader for academic editorial serif, Inter for crisp UI -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400;1,6..72,600&display=swap"
+        rel="stylesheet">
+
+    <!-- Bootstrap 4.6 & Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        :root {
+            --bg: #FAF8F4;
+            --bg-elevated: #FFFFFF;
+            --bg-subtle: #F2EFE8;
+            --ink: #1A1814;
+            --ink-soft: #5A554C;
+            --ink-faint: #8E8678;
+            --hairline: #E4DFD4;
+            --hairline-strong: #C8C2B3;
+            --accent: #005baa;
+            /* VNPT Blue */
+            --accent-rgb: 0, 91, 170;
+            --accent-soft: #eef5fc;
+            --accent-text: #004080;
+            --hust-red: #c8102e;
+            --success: #208752;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 18px;
+            --shadow-subtle: 0 4px 15px rgba(0, 0, 0, 0.05);
+            --shadow-hover: 0 12px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--ink);
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            line-height: 1.65;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: "Newsreader", Georgia, serif;
+            color: var(--ink);
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+
+        p {
+            color: var(--ink-soft);
+            font-size: 1.05rem;
+        }
+
+        a {
+            color: var(--accent);
+            transition: all 0.2s ease;
+        }
+
+        a:hover {
+            color: var(--accent-text);
+            text-decoration: none;
+        }
+
+        /* Top Sticky Language Bar */
+        .top-navbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(250, 248, 244, 0.94);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--hairline);
+            padding: 9px 0;
+            transition: all 0.3s ease;
+        }
+
+        /* Home button (VNPT AI logo) -> vnptai.github.io */
+        .nav-left {
+            display: flex;
+            align-items: center;
+            min-width: 0;
+        }
+
+        .home-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            flex: none;
+            padding: 4px 13px 4px 7px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--hairline-strong);
+            border-radius: 30px;
+            color: var(--ink);
+            font-weight: 700;
+            font-size: 0.92rem;
+            letter-spacing: -0.2px;
+            line-height: 1;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+        }
+
+        .home-btn:hover,
+        .home-btn:focus-visible {
+            color: var(--accent-text);
+            border-color: var(--accent);
+            background: var(--accent-soft);
+        }
+
+        .home-mark {
+            width: 24px;
+            height: 26px;
+            flex: none;
+        }
+
+        .nav-divider {
+            width: 1px;
+            height: 22px;
+            margin: 0 14px;
+            background: var(--hairline-strong);
+            flex: none;
+        }
+
+        @media (max-width: 575.98px) {
+            .home-text {
+                display: none;
+            }
+
+            .home-btn {
+                padding: 5px 7px;
+            }
+
+            .nav-divider {
+                margin: 0 10px;
+            }
+
+            .lang-btn {
+                padding: 6px 10px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .lang-btn span {
+                display: none;
+            }
+        }
+
+        .lang-switch-container {
+            display: inline-flex;
+            align-items: center;
+            background: var(--bg-subtle);
+            border: 1px solid var(--hairline-strong);
+            border-radius: 30px;
+            padding: 3px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+        }
+
+        .lang-btn {
+            border: none;
+            background: transparent;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--ink-soft);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .lang-btn.active {
+            background: var(--bg-elevated);
+            color: var(--ink);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .flag-icon {
+            width: 20px;
+            height: 14px;
+            object-fit: cover;
+            border-radius: 2px;
+            box-shadow: 0 0 1px rgba(0, 0, 0, 0.3);
+            display: inline-block;
+        }
+
+        /* Author links with sliding underline */
+        .author-link {
+            position: relative;
+            text-decoration: none;
+            color: var(--ink);
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .author-link::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -2px;
+            width: 100%;
+            height: 2px;
+            background-color: var(--accent);
+            transform: scaleX(0);
+            transform-origin: left center;
+            transition: transform 0.25s ease;
+        }
+
+        .author-link:hover::after {
+            transform: scaleX(1);
+        }
+
+        .author-link:hover {
+            color: var(--accent);
+        }
+
+        /* Venue badge */
+        .venue-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #005baa 0%, #003a6c 100%);
+            color: #ffffff;
+            font-size: 1.05rem;
+            font-weight: 700;
+            padding: 8px 22px;
+            border-radius: 30px;
+            box-shadow: 0 4px 15px rgba(0, 91, 170, 0.25);
+            letter-spacing: 0.4px;
+            margin: 14px 0 20px 0;
+        }
+
+        .oral-pill {
+            background: #ffc107;
+            color: #212529;
+            font-size: 0.75rem;
+            font-weight: 800;
+            padding: 3px 9px;
+            border-radius: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Button group */
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            padding: 9px 18px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--ink);
+            background: var(--bg-elevated);
+            border: 1px solid var(--hairline-strong);
+            border-radius: 10px;
+            text-decoration: none;
+            margin: 5px;
+            transition: all 0.25s cubic-bezier(0.165, 0.84, 0.44, 1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.09);
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .action-btn i,
+        .action-btn svg {
+            font-size: 1.1rem;
+        }
+
+        /* Stat cards */
+        .stat-card {
+            border-radius: var(--radius-md);
+            padding: 20px 16px;
+            text-align: center;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .stat-card .stat-icon {
+            font-size: 26px;
+            margin-bottom: 8px;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover .stat-icon {
+            transform: scale(1.25) rotate(-6deg);
+        }
+
+        .stat-card .stat-value {
+            font-size: 2.3rem;
+            font-weight: 800;
+            font-family: "Newsreader", serif;
+            line-height: 1.1;
+        }
+
+        .stat-card .stat-label {
+            font-weight: 700;
+            font-size: 0.88rem;
+            margin-top: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-card .stat-sub {
+            font-size: 0.82rem;
+            margin-top: 2px;
+            opacity: 0.85;
+        }
+
+        .stat-card.c1 {
+            background: #eaf1fb;
+            border-color: #cbe0fa;
+        }
+
+        .stat-card.c1 .stat-label,
+        .stat-card.c1 .stat-value,
+        .stat-card.c1 .stat-icon {
+            color: #005baa;
+        }
+
+        .stat-card.c2 {
+            background: #eaf6ef;
+            border-color: #c4ebd4;
+        }
+
+        .stat-card.c2 .stat-label,
+        .stat-card.c2 .stat-value,
+        .stat-card.c2 .stat-icon {
+            color: #208752;
+        }
+
+        .stat-card.c3 {
+            background: #fdf3e7;
+            border-color: #fce2c2;
+        }
+
+        .stat-card.c3 .stat-label,
+        .stat-card.c3 .stat-value,
+        .stat-card.c3 .stat-icon {
+            color: #c46400;
+        }
+
+        .stat-card.c4 {
+            background: #f4eefc;
+            border-color: #dfcefa;
+        }
+
+        .stat-card.c4 .stat-label,
+        .stat-card.c4 .stat-value,
+        .stat-card.c4 .stat-icon {
+            color: #6236bb;
+        }
+
+        /* Highlight cards */
+        .highlight-card {
+            border: 1px solid var(--hairline);
+            border-radius: var(--radius-md);
+            padding: 22px 20px;
+            background-color: var(--bg-elevated);
+            box-shadow: var(--shadow-subtle);
+            height: 100%;
+            text-align: left;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .highlight-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--hairline-strong);
+        }
+
+        .highlight-card .highlight-icon {
+            font-size: 28px;
+            display: inline-block;
+            margin-bottom: 12px;
+            transition: transform 0.35s ease;
+        }
+
+        .highlight-card:hover .highlight-icon {
+            transform: scale(1.2) rotate(-8deg);
+        }
+
+        .highlight-card .highlight-title {
+            font-weight: 700;
+            font-size: 1.15rem;
+            margin-bottom: 8px;
+            color: var(--ink);
+            font-family: "Newsreader", serif;
+        }
+
+        .highlight-card p {
+            margin-bottom: 0;
+            font-size: 0.94rem;
+            line-height: 1.55;
+        }
+
+        /* Section titles */
+        .section-header {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-header i,
+        .section-header span.emoji {
+            font-size: 1.8rem;
+        }
+
+        /* Figures */
+        .figure-box {
+            background: var(--bg-elevated);
+            border: 1px solid var(--hairline);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            box-shadow: var(--shadow-subtle);
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .figure-box:hover {
+            box-shadow: var(--shadow-hover);
+        }
+
+        .figure-hover {
+            max-width: 100%;
+            height: auto;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .figure-hover:hover {
+            transform: scale(1.015);
+        }
+
+        .figure-caption {
+            font-size: 0.95rem;
+            color: var(--ink-soft);
+            margin-top: 14px;
+            text-align: justify;
+        }
+
+        /* Result tables */
+        .result-table-wrap {
+            border: 1px solid var(--hairline);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            background: var(--bg-elevated);
+            box-shadow: var(--shadow-subtle);
+        }
+
+        .result-table {
+            margin-bottom: 0;
+        }
+
+        .result-table th {
+            background-color: var(--bg-subtle);
+            color: var(--ink);
+            font-weight: 700;
+            font-size: 0.88rem;
+            border-bottom: 2px solid var(--hairline-strong);
+            text-align: center;
+            vertical-align: middle;
+            padding: 12px 10px;
+        }
+
+        .result-table td {
+            text-align: center;
+            vertical-align: middle;
+            font-size: 0.92rem;
+            border-top: 1px solid var(--hairline);
+            padding: 11px 10px;
+        }
+
+        .result-table th.model-cell,
+        .result-table td.model-cell {
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .result-table tr.ours-row td {
+            background-color: var(--accent-soft);
+            font-weight: 700;
+            color: var(--accent-text);
+        }
+
+        .result-table tr.ours-row:hover td {
+            background-color: #dbeaff !important;
+        }
+
+        .result-table tbody tr:not(.ours-row):hover td {
+            background-color: #f8f6f0;
+        }
+
+        .badge-best {
+            background: #208752;
+            color: white;
+            font-size: 0.72rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 4px;
+            font-weight: 700;
+        }
+
+        /* Conference Gallery */
+        .gallery-item {
+            position: relative;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            background: var(--bg-elevated);
+            border: 1px solid var(--hairline);
+            box-shadow: var(--shadow-subtle);
+            transition: all 0.35s cubic-bezier(0.165, 0.84, 0.44, 1);
+            cursor: pointer;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-7px);
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.16);
+            border-color: var(--hairline-strong);
+        }
+
+        .gallery-img-wrap {
+            width: 100%;
+            height: 260px;
+            overflow: hidden;
+            background: #222;
+            position: relative;
+        }
+
+        .gallery-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            transition: transform 0.5s ease;
+        }
+
+        .gallery-item:hover .gallery-img {
+            transform: scale(1.08);
+        }
+
+        .gallery-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 60%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            display: flex;
+            align-items: flex-end;
+            padding: 16px;
+        }
+
+        .gallery-item:hover .gallery-overlay {
+            opacity: 1;
+        }
+
+        .gallery-zoom-badge {
+            color: white;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 4px 10px;
+            border-radius: 20px;
+            backdrop-filter: blur(4px);
+        }
+
+        .gallery-caption {
+            padding: 14px 16px;
+            flex-grow: 1;
+        }
+
+        .gallery-title {
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--ink);
+            margin-bottom: 4px;
+            font-family: "Newsreader", serif;
+        }
+
+        .gallery-sub {
+            font-size: 0.85rem;
+            color: var(--ink-soft);
+            line-height: 1.4;
+        }
+
+        /* Lightbox Modal */
+        .lightbox-modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            inset: 0;
+            background: rgba(10, 10, 12, 0.94);
+            backdrop-filter: blur(10px);
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .lightbox-modal.active {
+            display: flex;
+            animation: fadeIn 0.25s ease;
+        }
+
+        .lightbox-content {
+            max-width: 90vw;
+            max-height: 82vh;
+            border-radius: var(--radius-sm);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            object-fit: contain;
+        }
+
+        .lightbox-caption {
+            color: #f0f0f0;
+            margin-top: 14px;
+            font-size: 1.05rem;
+            text-align: center;
+            max-width: 800px;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 24px;
+            right: 28px;
+            color: #fff;
+            font-size: 32px;
+            cursor: pointer;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            transition: background 0.2s ease;
+        }
+
+        .lightbox-close:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        /* BibTeX Box */
+        .bibtex-box {
+            background: var(--bg-subtle);
+            border: 1px solid var(--hairline-strong);
+            border-radius: var(--radius-md);
+            padding: 18px 20px;
+            position: relative;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+            font-size: 0.88rem;
+            color: var(--ink);
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            padding: 6px 14px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            background: var(--bg-elevated);
+            border: 1px solid var(--hairline-strong);
+            border-radius: 6px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .copy-btn:hover {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        /* Scroll reveal animation */
+        .reveal {
+            opacity: 0;
+            transform: translateY(22px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .reveal.in-view {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        hr.divider {
+            border-top: 1px solid var(--hairline);
+            margin: 45px 0;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem !important;
+            }
+
+            h2 {
+                font-size: 1.3rem !important;
+            }
+
+            .venue-badge {
+                font-size: 0.9rem;
+                padding: 6px 16px;
+            }
+
+            .stat-card .stat-value {
+                font-size: 1.8rem;
+            }
+
+            .gallery-img-wrap {
+                height: 210px;
+            }
+        }
+
+        .obs-card .tag-pill { display:inline-block; font-size:.75rem; font-weight:800; letter-spacing:.4px; text-transform:uppercase; padding:3px 10px; border-radius:12px; margin-bottom:10px; }
+        .tag-blue { background:#eaf1fb; color:#005baa; } .tag-amber { background:#fdf3e7; color:#c46400; }
+        .result-table td.best { font-weight:700; color:var(--accent-text); }
+        .highlight-card .hl-body { font-size:.94rem; line-height:1.55; color:var(--ink-soft); }
+        .eq { overflow-x:auto; overflow-y:hidden; max-width:100%; font-size:92%; }
+    </style>
+    <script>window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]}};</script>
+    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+
+</head>
+
+<body>
+
+    <!-- Sticky Navigation & Bilingual Switcher -->
+    <nav class="top-navbar">
+        <div class="container d-flex justify-content-between align-items-center" style="max-width: 1040px;">
+            <div class="nav-left">
+                <!-- Home button: back to VNPT AI project hub -->
+                <a class="home-btn" href="https://vnptai.github.io/" title="VNPT AI — vnptai.github.io">
+                    <svg class="home-mark" viewBox="-0.7 0 50.1 54.1" aria-hidden="true" focusable="false"><defs><radialGradient id="vnpm0" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(24.35 27) scale(25.93 25.53)"><stop stop-color="#0047BB"/><stop offset="1" stop-color="#0072CE"/></radialGradient><linearGradient id="vnpm1" x1="22.6" y1="20.6" x2="28.96" y2="20.6" gradientUnits="userSpaceOnUse"><stop stop-color="#0047BB"/><stop offset="0.19" stop-color="#004CBD" stop-opacity="0.81"/><stop offset="0.41" stop-color="#005AC3" stop-opacity="0.59"/><stop offset="0.64" stop-color="#0071CC" stop-opacity="0.36"/><stop offset="0.88" stop-color="#0091D9" stop-opacity="0.12"/><stop offset="1" stop-color="#00A3E0" stop-opacity="0"/></linearGradient><linearGradient id="vnpm2" x1="29.36" y1="18.04" x2="26.26" y2="6.04" gradientUnits="userSpaceOnUse"><stop stop-color="#0047BB"/><stop offset="0.19" stop-color="#004CBD" stop-opacity="0.81"/><stop offset="0.41" stop-color="#005AC3" stop-opacity="0.59"/><stop offset="0.64" stop-color="#0071CC" stop-opacity="0.36"/><stop offset="0.88" stop-color="#0091D9" stop-opacity="0.12"/><stop offset="1" stop-color="#00A3E0" stop-opacity="0"/></linearGradient><linearGradient id="vnpm3" x1="17.86" y1="25.27" x2="20.97" y2="19.8" gradientUnits="userSpaceOnUse"><stop stop-color="#0047BB"/><stop offset="0.19" stop-color="#004CBD" stop-opacity="0.81"/><stop offset="0.41" stop-color="#005AC3" stop-opacity="0.59"/><stop offset="0.64" stop-color="#0071CC" stop-opacity="0.36"/><stop offset="0.88" stop-color="#0091D9" stop-opacity="0.12"/><stop offset="1" stop-color="#00A3E0" stop-opacity="0"/></linearGradient><linearGradient id="vnpm4" x1="18.98" y1="18.23" x2="6.88" y2="14.86" gradientUnits="userSpaceOnUse"><stop stop-color="#0047BB"/><stop offset="0.19" stop-color="#004CBD" stop-opacity="0.81"/><stop offset="0.41" stop-color="#005AC3" stop-opacity="0.59"/><stop offset="0.64" stop-color="#0071CC" stop-opacity="0.36"/><stop offset="0.88" stop-color="#0091D9" stop-opacity="0.12"/><stop offset="1" stop-color="#00A3E0" stop-opacity="0"/></linearGradient><linearGradient id="vnpm5" x1="19.6" y1="31.65" x2="16.49" y2="26.18" gradientUnits="userSpaceOnUse"><stop stop-color="#0047BB"/><stop offset="0.19" stop-color="#004CBD" stop-opacity="0.81"/><stop offset="0.41" stop-color="#005AC3" stop-opacity="0.59"/><stop offset="0.64" stop-color="#0071CC" stop-opacity="0.36"/><stop offset="0.88" stop-color="#0091D9" stop-opacity="0.12"/><stop offset="1" stop-color="#00A3E0" stop-opacity="0"/></linearGradient><linearGradient id="vnpm6" x1="13.97" y1="27.17" x2="5.17" y2="36.01" gradientUnits="userSpaceOnUse"><stop stop-color="#0047BB"/><stop offset="0.19" stop-color="#004CBD" stop-opacity="0.81"/><stop offset="0.41" stop-color="#005AC3" stop-opacity="0.59"/><stop offset="0.64" stop-color="#0071CC" stop-opacity="0.36"/><stop offset="0.88" stop-color="#0091D9" stop-opacity="0.12"/><stop offset="1" stop-color="#00A3E0" stop-opacity="0"/></linearGradient><linearGradient id="vnpm7" x1="26.08" y1="33.37" x2="19.72" y2="33.37" gradientUnits="userSpaceOnUse"><stop stop-color="#0047BB"/><stop offset="0.19" stop-color="#004CBD" stop-opacity="0.81"/><stop offset="0.41" stop-color="#005AC3" stop-opacity="0.59"/><stop offset="0.64" stop-color="#0071CC" stop-opacity="0.36"/><stop offset="0.88" stop-color="#0091D9" stop-opacity="0.12"/><stop offset="1" stop-color="#00A3E0" stop-opacity="0"/></linearGradient><linearGradient id="vnpm8" x1="19.33" y1="35.93" x2="22.42" y2="47.92" gradientUnits="userSpaceOnUse"><stop stop-color="#0047BB"/><stop offset="0.19" stop-color="#004CBD" stop-opacity="0.81"/><stop offset="0.41" stop-color="#005AC3" stop-opacity="0.59"/><stop offset="0.64" stop-color="#0071CC" stop-opacity="0.36"/><stop offset="0.88" stop-color="#0091D9" stop-opacity="0.12"/><stop offset="1" stop-color="#00A3E0" stop-opacity="0"/></linearGradient><linearGradient id="vnpm9" x1="30.85" y1="28.74" x2="27.74" y2="34.2" gradientUnits="userSpaceOnUse"><stop stop-color="#0047BB"/><stop offset="0.19" stop-color="#004CBD" stop-opacity="0.81"/><stop offset="0.41" stop-color="#005AC3" stop-opacity="0.59"/><stop offset="0.64" stop-color="#0071CC" stop-opacity="0.36"/><stop offset="0.88" stop-color="#0091D9" stop-opacity="0.12"/><stop offset="1" stop-color="#00A3E0" stop-opacity="0"/></linearGradient><linearGradient id="vnpm10" x1="29.72" y1="35.78" x2="41.82" y2="39.14" gradientUnits="userSpaceOnUse"><stop stop-color="#0047BB"/><stop offset="0.19" stop-color="#004CBD" stop-opacity="0.81"/><stop offset="0.41" stop-color="#005AC3" stop-opacity="0.59"/><stop offset="0.64" stop-color="#0071CC" stop-opacity="0.36"/><stop offset="0.88" stop-color="#0091D9" stop-opacity="0.12"/><stop offset="1" stop-color="#00A3E0" stop-opacity="0"/></linearGradient><linearGradient id="vnpm11" x1="29.11" y1="22.32" x2="32.21" y2="27.79" gradientUnits="userSpaceOnUse"><stop stop-color="#0047BB"/><stop offset="0.19" stop-color="#004CBD" stop-opacity="0.81"/><stop offset="0.41" stop-color="#005AC3" stop-opacity="0.59"/><stop offset="0.64" stop-color="#0071CC" stop-opacity="0.36"/><stop offset="0.88" stop-color="#0091D9" stop-opacity="0.12"/><stop offset="1" stop-color="#00A3E0" stop-opacity="0"/></linearGradient><linearGradient id="vnpm12" x1="34.73" y1="26.8" x2="43.54" y2="17.96" gradientUnits="userSpaceOnUse"><stop stop-color="#0047BB"/><stop offset="0.19" stop-color="#004CBD" stop-opacity="0.81"/><stop offset="0.41" stop-color="#005AC3" stop-opacity="0.59"/><stop offset="0.64" stop-color="#0071CC" stop-opacity="0.36"/><stop offset="0.88" stop-color="#0091D9" stop-opacity="0.12"/><stop offset="1" stop-color="#00A3E0" stop-opacity="0"/></linearGradient></defs><path d="M46.5 34.6C45.7 34.1 44.7 33.9 43.8 34C42.6 34.2 41.3 33.9 40.3 33.3C38.9 32.5 38 31.3 37.6 29.9C37.2 28.7 36.5 27.8 35.6 27C36.6 26.3 37.3 25.3 37.6 24.1C38 22.7 39 21.5 40.3 20.7C41.4 20.1 42.6 19.9 43.8 20C44.7 20.1 45.7 19.9 46.5 19.4C47.5 18.9 48.2 17.9 48.5 16.8C48.8 15.7 48.7 14.5 48.1 13.5C46.9 11.4 44.2 10.7 42.1 11.9C41.3 12.4 40.6 13.1 40.3 13.9C39.8 15 38.9 16 37.8 16.6C36.5 17.3 35 17.5 33.5 17.2C32.3 16.9 31.1 17 30 17.4C29.8 16.2 29.3 15.1 28.4 14.2C27.4 13.2 26.8 11.8 26.8 10.3C26.8 9.1 27.2 7.9 27.9 6.9C28.5 6.2 28.8 5.3 28.8 4.3C28.8 1.9 26.8 0 24.4 0C21.9 0 20 1.9 20 4.3C20 5.3 20.3 6.1 20.8 6.9C21.5 7.9 21.9 9.1 21.9 10.3C21.9 11.8 21.3 13.2 20.3 14.3C19.4 15.1 18.9 16.2 18.7 17.4C17.6 16.9 16.4 16.8 15.2 17.1C13.7 17.5 12.2 17.3 10.9 16.5C9.8 15.9 9 15 8.5 13.9C8.1 13.1 7.4 12.4 6.6 11.9C4.5 10.7 1.8 11.4 0.6 13.5C0 14.5-0.1 15.7 0.2 16.8C0.5 17.9 1.2 18.8 2.2 19.4C3 19.9 4 20.1 4.9 20C6.1 19.8 7.3 20.1 8.4 20.7C9.7 21.5 10.7 22.7 11.1 24.1C11.5 25.3 12.1 26.2 13.1 27C12.1 27.7 11.4 28.7 11.1 29.9C10.7 31.3 9.7 32.5 8.4 33.3C7.3 33.9 6.1 34.1 4.9 34C3.9 33.9 3 34.1 2.2 34.6C0.1 35.8-0.6 38.4 0.6 40.5C1.4 41.9 2.9 42.7 4.4 42.7C5.2 42.7 5.9 42.5 6.6 42.1C7.4 41.6 8.1 40.9 8.4 40.1C8.9 39 9.8 38 10.9 37.4C12.2 36.7 13.7 36.5 15.2 36.8C16.4 37.1 17.6 37 18.7 36.6C18.9 37.8 19.4 38.9 20.3 39.8C21.3 40.8 21.9 42.2 21.9 43.7C21.9 44.9 21.5 46.1 20.8 47.1C20.2 47.8 19.9 48.7 19.9 49.7C19.9 52.1 21.9 54 24.3 54C26.8 54 28.7 52.1 28.7 49.7C28.7 48.7 28.4 47.9 27.9 47.1C27.2 46.1 26.8 45 26.8 43.7C26.8 42.2 27.4 40.8 28.4 39.7C29.3 38.9 29.8 37.8 30 36.6C31.1 37.1 32.3 37.2 33.5 36.9C35 36.5 36.5 36.7 37.8 37.5C38.9 38.1 39.7 39 40.2 40.1C40.6 40.9 41.2 41.6 42.1 42.1C42.8 42.5 43.5 42.7 44.3 42.7C45.8 42.7 47.3 41.9 48.1 40.5C49.3 38.4 48.6 35.8 46.5 34.6ZM27.2 28.6C26.8 29.3 26.6 29.9 26.5 30.6C25.8 30.4 25.1 30.2 24.3 30.2C23.6 30.2 22.9 30.3 22.2 30.6C22.1 29.9 21.9 29.2 21.5 28.6C21.2 28 20.7 27.4 20.1 27C20.7 26.6 21.2 26 21.5 25.4C21.9 24.8 22.1 24.1 22.2 23.4C22.9 23.7 23.6 23.8 24.4 23.8C25.1 23.8 25.8 23.7 26.5 23.4C26.6 24.1 26.8 24.8 27.2 25.4C27.5 26.1 28 26.6 28.6 27C28 27.4 27.5 28 27.2 28.6ZM42.5 14.9C42.7 14.5 42.9 14.2 43.3 14C43.6 13.8 43.9 13.8 44.3 13.8C45 13.8 45.6 14.1 46 14.7C46.5 15.6 46.2 16.8 45.3 17.4C44.9 17.6 44.5 17.6 44.1 17.6C42.3 17.4 40.6 17.8 39.1 18.6C40.6 17.8 41.8 16.5 42.5 14.9ZM32.1 19.4C32.4 19.4 32.6 19.4 32.9 19.5L32.9 19.5C35 20 37.1 19.7 39 18.7C37.2 19.7 35.8 21.4 35.2 23.4C35 24.3 34.5 24.9 33.7 25.4C32.2 26.3 30.2 25.7 29.3 24.2C28.9 23.5 28.7 22.6 29 21.8C29.2 21 29.7 20.3 30.5 19.8C31 19.6 31.5 19.4 32.1 19.4ZM24.4 2.4C25.4 2.4 26.3 3.3 26.3 4.3C26.3 4.8 26.2 5.1 25.9 5.5C24.9 6.9 24.4 8.5 24.4 10.2C24.3 8.5 23.8 6.9 22.8 5.5C22.5 5.1 22.4 4.8 22.4 4.3C22.4 3.3 23.3 2.4 24.4 2.4ZM22 16L22 16C23.5 14.5 24.3 12.5 24.4 10.4C24.4 12.4 25.2 14.4 26.7 15.9C27.3 16.5 27.6 17.3 27.6 18.2C27.6 20 26.2 21.4 24.4 21.4C22.6 21.4 21.1 20 21.1 18.2C21.1 17.4 21.4 16.6 22 16ZM5.5 17.5C5.2 17.5 4.9 17.5 4.6 17.6C4.2 17.6 3.8 17.5 3.5 17.3C3 17.1 2.7 16.6 2.5 16.2C2.4 15.7 2.5 15.1 2.7 14.7C3 14.2 3.4 13.9 3.9 13.8C4.4 13.7 5 13.7 5.4 14C5.8 14.2 6 14.5 6.2 14.9C6.9 16.4 8.1 17.7 9.6 18.6C8.3 17.9 6.9 17.5 5.5 17.5ZM9.7 18.7C11.6 19.7 13.7 20 15.8 19.5C16.6 19.3 17.5 19.4 18.2 19.8C19 20.2 19.5 20.9 19.7 21.8C20 22.6 19.9 23.4 19.4 24.2C18.5 25.7 16.5 26.2 15 25.3C14.3 24.9 13.7 24.3 13.5 23.5L13.5 23.5C12.9 21.4 11.6 19.7 9.7 18.7ZM6.2 39.1C6 39.5 5.7 39.8 5.4 40C4.5 40.5 3.3 40.2 2.7 39.3C2.2 38.4 2.5 37.2 3.4 36.6C3.7 36.5 4.1 36.4 4.4 36.4C4.5 36.4 4.6 36.4 4.6 36.4C6.4 36.6 8.1 36.2 9.6 35.4C8.1 36.2 6.9 37.5 6.2 39.1ZM15.8 34.5L15.8 34.5C13.7 34 11.5 34.3 9.7 35.3C11.5 34.3 12.8 32.6 13.5 30.6C13.7 29.7 14.2 29.1 15 28.6C15.5 28.3 16 28.2 16.6 28.2C16.9 28.2 17.1 28.2 17.4 28.3C18.3 28.5 19 29.1 19.4 29.8C20.3 31.3 19.8 33.3 18.2 34.2C17.5 34.6 16.6 34.7 15.8 34.5ZM24.3 51.6C23.2 51.6 22.4 50.7 22.4 49.7C22.4 49.2 22.5 48.9 22.8 48.5C23.8 47.1 24.3 45.5 24.3 43.8C24.3 45.5 24.9 47.1 25.9 48.5C26.2 48.9 26.3 49.3 26.3 49.7C26.3 50.7 25.4 51.6 24.3 51.6ZM26.7 38L26.7 38C25.2 39.6 24.3 41.5 24.3 43.6C24.3 41.6 23.5 39.6 22 38.1C21.4 37.5 21.1 36.7 21.1 35.8C21.1 34.1 22.5 32.6 24.3 32.6C26.1 32.6 27.6 34.1 27.6 35.8C27.6 36.6 27.2 37.4 26.7 38ZM34.9 34.3C34.2 34.3 33.6 34.4 32.9 34.5C32.1 34.7 31.2 34.6 30.5 34.2C28.9 33.3 28.4 31.4 29.3 29.8C30.2 28.3 32.2 27.8 33.7 28.7C34.4 29.1 35 29.7 35.2 30.5L35.2 30.5C35.8 32.6 37.1 34.3 39 35.3C37.7 34.6 36.3 34.3 34.9 34.3ZM46 39.3C45.4 40.2 44.2 40.5 43.3 40C42.9 39.8 42.6 39.5 42.5 39.1C41.8 37.6 40.6 36.3 39.1 35.4C40.6 36.3 42.3 36.6 44.1 36.4C44.5 36.4 44.9 36.5 45.2 36.7C46.2 37.2 46.5 38.4 46 39.3Z" fill="url(#vnpm0)"/><path d="M14.2 13.4C12.9 13.4 11.7 12.7 11.1 11.6C10.6 10.8 10.5 9.8 10.7 8.9C11 8 11.6 7.2 12.4 6.7C13 6.4 13.6 6.3 14.2 6.3C15.5 6.3 16.7 7 17.4 8.1C18.4 9.8 17.8 12 16.1 13C15.5 13.3 14.9 13.4 14.2 13.4Z" fill="#59CBE8"/><path d="M7.4 28.8C6.7 29.9 5.5 30.6 4.2 30.6C3.2 30.6 2.3 30.3 1.6 29.6C1 28.9 0.6 28 0.6 27C0.6 26.4 0.7 25.8 1.1 25.3C1.7 24.1 2.9 23.5 4.2 23.5C6.2 23.5 7.9 25.1 7.9 27C7.9 27.7 7.7 28.3 7.4 28.8Z" fill="#59CBE8"/><path d="M17.5 42.4C18.1 43.5 18.1 44.9 17.5 46C17 46.8 16.2 47.4 15.3 47.6C14.3 47.9 13.3 47.8 12.5 47.3C11.9 47 11.5 46.5 11.2 46C10.5 44.9 10.5 43.5 11.2 42.4C12.2 40.7 14.4 40.1 16.1 41.1C16.7 41.4 17.1 41.9 17.5 42.4Z" fill="#59CBE8"/><path d="M34.4 40.6C35.7 40.6 37 41.3 37.6 42.4C38.1 43.2 38.2 44.2 38 45.1C37.7 46 37.1 46.8 36.3 47.3C35.7 47.6 35.1 47.7 34.5 47.7C33.2 47.7 31.9 47 31.3 45.9C30.3 44.2 30.9 42 32.6 41C33.2 40.7 33.8 40.6 34.4 40.6Z" fill="#59CBE8"/><path d="M41.3 25.2C42 24.1 43.2 23.4 44.5 23.4C45.5 23.4 46.4 23.7 47.1 24.4C47.7 25.1 48.1 26 48.1 27C48.1 27.6 47.9 28.2 47.6 28.7C47 29.9 45.8 30.5 44.5 30.5C42.5 30.5 40.8 28.9 40.8 27C40.8 26.3 41 25.7 41.3 25.2Z" fill="#59CBE8"/><path d="M31.2 11.6C30.6 10.5 30.6 9.1 31.2 8C31.7 7.2 32.5 6.6 33.4 6.4C34.4 6.1 35.4 6.2 36.2 6.7C36.7 7 37.2 7.5 37.5 8C38.2 9.1 38.2 10.5 37.5 11.6C36.5 13.3 34.3 13.9 32.6 12.9C32 12.6 31.5 12.1 31.2 11.6Z" fill="#59CBE8"/><path d="M30 17.4C29.7 17.5 29.5 17.6 29.3 17.8C28.4 18.3 27.6 19 27.1 19.9C26.6 20.8 25.5 21.4 24.4 21.4C23.1 21.4 22.1 20.7 21.5 19.7L21.6 19.8C21.8 20.2 22 20.7 22.1 21.1C22.3 21.9 22.4 22.6 22.2 23.4C22.9 23.6 23.6 23.8 24.4 23.8C25.1 23.8 25.8 23.7 26.5 23.4C28.6 22.6 30.1 20.6 30.1 18.2C30.1 17.9 30 17.7 30 17.4Z" fill="url(#vnpm1)"/><path d="M29.3 17.8C29.5 17.6 29.7 17.5 30 17.4C29.8 16.2 29.3 15.1 28.4 14.2C27.4 13.2 26.8 11.8 26.8 10.3C26.8 9.1 27.2 7.9 27.9 6.9C28.5 6.2 28.8 5.3 28.8 4.3C28.8 1.9 26.8 0 24.4 0V2.4C25.4 2.4 26.3 3.3 26.3 4.3C26.3 4.8 26.2 5.1 25.9 5.5C24.9 6.9 24.4 8.5 24.4 10.2V10.4C24.4 12.4 25.2 14.4 26.7 15.9C27.3 16.5 27.6 17.3 27.6 18.2C27.6 18.8 27.4 19.4 27.1 19.9L27.1 19.9C27.6 19 28.4 18.3 29.3 17.8Z" fill="url(#vnpm2)"/><path d="M18.7 17.4C18.7 17.6 18.7 17.9 18.7 18.2C18.7 19.2 18.9 20.2 19.5 21.1C20 22 20 23.2 19.4 24.2C18.8 25.2 17.7 25.8 16.5 25.8L16.6 25.8C17.1 25.8 17.6 25.8 18.1 26C18.8 26.2 19.5 26.5 20.1 27C20.7 26.5 21.2 26 21.6 25.4C21.9 24.7 22.1 24.1 22.3 23.4C22.6 21.2 21.5 18.9 19.5 17.7C19.2 17.6 19 17.5 18.7 17.4Z" fill="url(#vnpm3)"/><path d="M18.7 18.2C18.7 17.9 18.7 17.6 18.7 17.4C17.6 16.9 16.4 16.8 15.2 17.1C13.7 17.5 12.2 17.3 10.9 16.5C9.8 15.9 9 15 8.5 13.9C8.1 13 7.5 12.3 6.6 11.9C4.5 10.7 1.8 11.4 0.6 13.5L2.7 14.7C3.3 13.8 4.5 13.4 5.4 14C5.8 14.2 6.1 14.5 6.2 14.9C6.9 16.4 8.1 17.7 9.6 18.6L9.7 18.6C11.6 19.7 13.7 20 15.8 19.5C16.6 19.3 17.5 19.4 18.2 19.8C18.8 20.1 19.2 20.5 19.5 21L19.5 21C19 20.2 18.7 19.2 18.7 18.2Z" fill="url(#vnpm4)"/><path d="M13.1 26.9C13.3 27.1 13.5 27.3 13.8 27.4C14.7 27.9 15.7 28.2 16.7 28.2C17.8 28.2 18.8 28.8 19.4 29.8C20 30.8 20 32.1 19.4 33L19.4 32.9C19.7 32.5 20 32.2 20.3 31.8C20.9 31.3 21.5 30.9 22.2 30.6C22.1 29.9 21.9 29.2 21.5 28.6C21.2 27.9 20.7 27.4 20.1 27C18.3 25.6 15.8 25.3 13.7 26.5C13.5 26.6 13.3 26.8 13.1 26.9Z" fill="url(#vnpm5)"/><path d="M13.8 27.4C13.5 27.3 13.3 27.1 13.1 26.9C12.1 27.7 11.4 28.7 11.1 29.9C10.7 31.3 9.7 32.5 8.4 33.2C7.3 33.8 6.1 34.1 4.9 34C4 33.9 3 34.1 2.2 34.5C0.1 35.7-0.6 38.4 0.6 40.5L2.7 39.3C2.2 38.3 2.5 37.2 3.4 36.6C3.8 36.4 4.2 36.3 4.6 36.4C6.4 36.5 8.1 36.2 9.6 35.4L9.7 35.3C11.5 34.2 12.9 32.6 13.5 30.5C13.7 29.7 14.2 29 15 28.6C15.5 28.3 16.1 28.2 16.7 28.2L16.7 28.2C15.7 28.2 14.7 27.9 13.8 27.4Z" fill="url(#vnpm6)"/><path d="M18.7 36.6C18.9 36.5 19.2 36.3 19.4 36.2C20.3 35.7 21.1 35 21.6 34.1C22.1 33.2 23.2 32.6 24.3 32.6C25.5 32.6 26.6 33.3 27.2 34.3L27.1 34.2C26.9 33.7 26.7 33.3 26.6 32.8C26.4 32.1 26.3 31.3 26.4 30.6C25.8 30.3 25.1 30.2 24.3 30.2C23.6 30.2 22.9 30.3 22.2 30.6C20.1 31.4 18.6 33.4 18.6 35.8C18.6 36 18.6 36.3 18.7 36.6Z" fill="url(#vnpm7)"/><path d="M19.4 36.2C19.2 36.3 18.9 36.5 18.7 36.6C18.9 37.8 19.4 38.9 20.3 39.7C21.3 40.8 21.9 42.2 21.9 43.7C21.9 44.9 21.5 46.1 20.8 47.1C20.2 47.8 19.9 48.7 19.9 49.6C19.9 52 21.9 54 24.3 54V51.6C23.2 51.6 22.4 50.7 22.4 49.6C22.4 49.2 22.5 48.8 22.7 48.5C23.8 47.1 24.3 45.5 24.3 43.8V43.6C24.3 41.5 23.5 39.6 22 38C21.4 37.4 21.1 36.6 21.1 35.8C21.1 35.2 21.3 34.6 21.6 34.1L21.5 34.1C21 35 20.3 35.7 19.4 36.2Z" fill="url(#vnpm8)"/><path d="M30 36.6C30 36.4 30 36.1 30 35.8C30 34.8 29.8 33.8 29.3 33C28.7 32 28.7 30.8 29.3 29.8C29.9 28.8 31 28.2 32.2 28.3L32.1 28.2C31.6 28.2 31.1 28.2 30.6 28C29.9 27.8 29.2 27.5 28.6 27C28 27.5 27.5 28 27.2 28.6C26.8 29.3 26.6 29.9 26.5 30.6C26.1 32.8 27.2 35.1 29.2 36.3C29.5 36.4 29.7 36.5 30 36.6Z" fill="url(#vnpm9)"/><path d="M30 35.8C30 36.1 30 36.4 30 36.6C31.1 37.1 32.4 37.2 33.5 36.9C35 36.5 36.5 36.7 37.8 37.5C38.9 38.1 39.7 39 40.2 40.1C40.6 41 41.3 41.7 42.1 42.1C44.2 43.3 46.9 42.6 48.1 40.5L46 39.3C45.4 40.2 44.2 40.6 43.3 40C42.9 39.8 42.7 39.5 42.5 39.1C41.8 37.6 40.6 36.3 39.1 35.4L39 35.4C37.2 34.3 35 34 32.9 34.5C32.1 34.7 31.2 34.6 30.5 34.2C29.9 33.9 29.5 33.5 29.3 33L29.2 33C29.8 33.8 30 34.8 30 35.8Z" fill="url(#vnpm10)"/><path d="M35.6 27C35.4 26.9 35.2 26.7 34.9 26.6C34 26.1 33 25.8 32 25.8C30.9 25.8 29.9 25.2 29.3 24.2C28.7 23.2 28.8 21.9 29.4 20.9L29.3 21C29 21.4 28.8 21.8 28.4 22.2C27.8 22.7 27.2 23.1 26.5 23.4C26.6 24.1 26.8 24.8 27.2 25.4C27.6 26.1 28 26.6 28.6 27C30.4 28.4 32.9 28.7 35 27.5C35.2 27.3 35.4 27.2 35.6 27Z" fill="url(#vnpm11)"/><path d="M34.9 26.6C35.2 26.7 35.4 26.9 35.6 27C36.6 26.3 37.3 25.3 37.6 24.1C38 22.7 39 21.5 40.3 20.8C41.4 20.1 42.6 19.9 43.8 20C44.8 20.1 45.7 19.9 46.5 19.5C48.6 18.3 49.3 15.6 48.1 13.5L46 14.7C46.5 15.6 46.2 16.8 45.3 17.4C44.9 17.6 44.5 17.6 44.1 17.6C42.4 17.4 40.6 17.8 39.1 18.6L39 18.7C37.2 19.8 35.9 21.4 35.3 23.5C35 24.3 34.5 25 33.7 25.4C33.2 25.7 32.6 25.8 32 25.8L32 25.8C33 25.8 34 26.1 34.9 26.6Z" fill="url(#vnpm12)"/></svg>
+                    <span class="home-text">VNPT AI</span>
+                </a>
+                <span class="nav-divider" aria-hidden="true"></span>
+                <span
+                    style="font-weight: 800; font-size: 1.15rem; color: var(--accent); letter-spacing: -0.5px;">Diversified Unlearning</span>
+                <span class="text-muted d-none d-md-inline" style="font-size: 0.85rem; margin-left: 8px;">| WACV</span>
+            </div>
+
+            <!-- Language Switcher with VN & UK Flags -->
+            <div class="lang-switch-container">
+                <button type="button" class="lang-btn active" id="btn-lang-vi" onclick="setLanguage('vi')">
+                    <!-- SVG Flag of Vietnam -->
+                    <svg class="flag-icon" viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="30" height="20" fill="#da251d" />
+                        <polygon
+                            points="15,4 16.47,8.53 21.23,8.53 17.38,11.33 18.85,15.86 15,13.06 11.15,15.86 12.62,11.33 8.77,8.53 13.53,8.53"
+                            fill="#ff0" />
+                    </svg>
+                    <span>Tiếng Việt</span>
+                </button>
+                <button type="button" class="lang-btn" id="btn-lang-en" onclick="setLanguage('en')">
+                    <!-- SVG Flag of UK / English -->
+                    <svg class="flag-icon" viewBox="0 0 60 30" xmlns="http://www.w3.org/2000/svg">
+                        <clipPath id="s">
+                            <path d="M0,0 v30 h60 v-30 z" />
+                        </clipPath>
+                        <clipPath id="t">
+                            <path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z" />
+                        </clipPath>
+                        <g clip-path="url(#s)">
+                            <path d="M0,0 v30 h60 v-30 z" fill="#012169" />
+                            <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6" />
+                            <path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#t)" stroke="#C8102E" stroke-width="4" />
+                            <path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10" />
+                            <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6" />
+                        </g>
+                    </svg>
+                    <span>English</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+        <!-- Main Container -->
+    <div class="container" style="max-width: 1040px; padding-top: 25px;">
+
+        <header class="text-center pt-3 pb-2">
+            <h1 class="font-weight-bold" style="font-size: 2.5rem; line-height: 1.25; margin-bottom: 12px;">
+                <span class="lang-en d-none">Unlearn in Context: Contrastive Alignment via Diversified Supervision for Diffusion Models</span><span class="lang-vi">Học Quên Theo Ngữ Cảnh: Căn Chỉnh Tương Phản Qua Giám Sát Đa Dạng Cho Mô Hình Khuếch Tán</span>
+            </h1>
+            <h2 class="text-muted font-italic" style="font-size: 1.45rem; font-weight: 500; max-width: 860px; margin: 0 auto 16px;">
+                <span class="lang-en d-none">Unlearn a concept through the company it keeps</span><span class="lang-vi">Học quên một khái niệm thông qua những ngữ cảnh đi cùng nó</span>
+            </h2>
+            <div class="d-flex justify-content-center align-items-center flex-wrap gap-2">
+                <span class="venue-badge">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>WACV</span>
+                    <span class="oral-pill">IEEE/CVF</span>
+                </span>
+            </div>
+            <div class="my-3 font-weight-normal" style="font-size: 1.12rem; line-height: 2;">
+                <span class="author-link">Hao Pham<sup>1,2,*</sup></span> &nbsp;•&nbsp;
+                <span class="author-link">Duy Truong<sup>1,2,*</sup></span> &nbsp;•&nbsp;
+                <span class="author-link">Duy Khanh Dinh<sup>1</sup></span> &nbsp;•&nbsp;
+                <span class="author-link">Cuong Tien Nguyen<sup>1</sup></span> &nbsp;•&nbsp;
+                <span class="author-link">Tuan Anh Bui</span>
+            </div>
+            <div class="mb-4 text-muted" style="font-size: 0.95rem; line-height: 1.6;">
+                <div>
+                    <strong><sup>1</sup></strong> <span class="lang-en d-none">VNPT AI, VNPT Group, Vietnam</span><span class="lang-vi">VNPT AI, Tập đoàn Bưu chính Viễn thông Việt Nam</span>
+                    &nbsp;&nbsp;|&nbsp;&nbsp;
+                    <strong><sup>2</sup></strong> <span class="lang-en d-none">Hanoi University of Science and Technology (HUST), Vietnam</span><span class="lang-vi">Đại học Bách khoa Hà Nội (HUST), Việt Nam</span>
+                </div>
+                <div class="mt-1" style="font-size: 0.85rem; color: var(--ink-faint);"><span class="lang-en d-none"><sup>*</sup> Equal contribution</span><span class="lang-vi"><sup>*</sup> Đóng góp ngang nhau</span></div>
+            </div>
+            <div class="d-flex justify-content-center flex-wrap mb-4">
+                <a class="action-btn" href="99_Unlearn_in_Context_Contrast.pdf" target="_blank" rel="noopener" download>
+                    <i class="fa-solid fa-file-pdf text-danger"></i>
+                    <span class="lang-en d-none">Download PDF</span><span class="lang-vi">Tải bản PDF</span>
+                </a>
+                <a class="action-btn" href="https://github.com/VNPT-AI-Official/WACV_diversified_unlearning" target="_blank" rel="noopener">
+                    <i class="fa-brands fa-github text-dark"></i>
+                    GitHub
+                </a>
+                <a class="action-btn" href="#bibtex-section">
+                    <i class="fa-solid fa-quote-left text-success"></i>
+                    BibTeX
+                </a>
+            </div>
+        </header>
+
+        <div class="figure-box mb-4">
+            <img src="images/teaser.jpg" alt="Diversified Unlearning versus keyword-based unlearning on erasure, preservation and recovery attacks" class="figure-hover img-fluid"
+                onclick="openLightbox('images/teaser.jpg', 'Figure 1: Diversified Unlearning vs. keyword-based unlearning.')">
+            <div class="figure-caption">
+                <strong class="lang-en d-none">Figure 1:</strong><strong class="lang-vi">Hình 1:</strong>
+                <span class="lang-en d-none"><strong>Diversified Unlearning</strong> sits on top of state-of-the-art unlearning methods and brings three benefits at once: stronger erasure of the target (Henry Cavill), better preservation of unrelated concepts, and stronger robustness against recovery attacks (Ring-A-Bell on &ldquo;nudity&rdquo;, Fantastic Copyrighted Concepts on &ldquo;Mario&rdquo;). Sensitive content is censored.</span><span class="lang-vi"><strong>Diversified Unlearning</strong> được gắn thêm vào các phương pháp học quên hiện đại và mang lại đồng thời ba lợi ích: xoá mục tiêu (Henry Cavill) mạnh hơn, giữ lại tốt hơn các khái niệm không liên quan, và bền vững hơn trước các tấn công khôi phục (Ring-A-Bell với &ldquo;nudity&rdquo;, Fantastic Copyrighted Concepts với &ldquo;Mario&rdquo;). Nội dung nhạy cảm đã được che.</span>
+            </div>
+        </div>
+
+        <div class="row my-4">
+            <div class="col-md-3 col-6 mb-3">
+                <div class="stat-card c1">
+                    <div class="stat-icon"><i class="fa-solid fa-trophy"></i></div>
+                    <div class="stat-value">37 / 6 / 7</div>
+                    <div class="stat-label"><span class="lang-en d-none">Wins / Ties / Losses</span><span class="lang-vi">Thắng / Hoà / Thua</span></div>
+                    <div class="stat-sub"><span class="lang-en d-none">across 50 erasure–preservation comparisons</span><span class="lang-vi">trên 50 phép so sánh xoá–giữ lại</span></div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 mb-3">
+                <div class="stat-card c2">
+                    <div class="stat-icon"><i class="fa-solid fa-arrow-trend-down"></i></div>
+                    <div class="stat-value">~50%</div>
+                    <div class="stat-label"><span class="lang-en d-none">Lower GPT-Score</span><span class="lang-vi">GPT-Score giảm</span></div>
+                    <div class="stat-sub"><span class="lang-en d-none">on celebrity erasure (ESD, AP)</span><span class="lang-vi">khi xoá người nổi tiếng (ESD, AP)</span></div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 mb-3">
+                <div class="stat-card c3">
+                    <div class="stat-icon"><i class="fa-solid fa-layer-group"></i></div>
+                    <div class="stat-value">5</div>
+                    <div class="stat-label"><span class="lang-en d-none">Settings</span><span class="lang-vi">Kịch bản</span></div>
+                    <div class="stat-sub"><span class="lang-en d-none">celebrities, objects, characters, nudity, art styles</span><span class="lang-vi">người nổi tiếng, đồ vật, nhân vật, nudity, phong cách nghệ thuật</span></div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 mb-3">
+                <div class="stat-card c4">
+                    <div class="stat-icon"><i class="fa-solid fa-code-compare"></i></div>
+                    <div class="stat-value">10</div>
+                    <div class="stat-label"><span class="lang-en d-none">Methods</span><span class="lang-vi">Phương pháp</span></div>
+                    <div class="stat-sub"><span class="lang-en d-none">5 baselines, each with and without ours</span><span class="lang-vi">5 baseline, mỗi loại có và không có phương pháp của chúng tôi</span></div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="divider">
+
+        <section class="reveal my-5">
+            <h3 class="section-header">
+                <span>💡</span>
+                <span class="lang-en d-none">Abstract</span><span class="lang-vi">Tóm Tắt Bài Báo</span>
+            </h3>
+            <div class="p-4"
+                style="background: var(--bg-elevated); border: 1px solid var(--hairline); border-radius: var(--radius-md); box-shadow: var(--shadow-subtle);">
+                <p class="lang-en d-none mb-0" style="text-align: justify; font-size: 1.08rem; color: var(--ink);">Concept unlearning has emerged as a promising direction for reducing the risks of harmful content generation in text-to-image diffusion models by selectively erasing undesirable concepts from a model&rsquo;s parameters. Existing approaches typically rely on keywords to identify the target concept to be unlearned. However, we show that this keyword-based formulation is inherently limited: a visual concept is multi-dimensional, can be expressed in diverse textual forms, and often overlaps with related concepts in the latent space. We therefore adopt a <em>contextual</em> view: a concept should be unlearned through the company it keeps. Under this view, keyword-based unlearning approaches, which imprecisely indicate the target concept via a fixed representation, are brittle against prompt-rephrasing jailbreaks and highly prone to collateral over-forgetting. To address these limitations, we propose <strong>Diversified Unlearning</strong>, a framework that exposes the erasure objective to natural context-dependent embedding variations. Rather than relying on simple prompt augmentation, we construct paired contextual formulations that introduce <strong>implicit contrastive supervision</strong> directly into the forgetting process, encouraging the model to isolate the target concept while keeping surrounding contexts invariant. Through extensive experiments across multiple benchmarks and state-of-the-art baselines, we demonstrate that integrating our framework as a lightweight add-on into existing unlearning pipelines yields notable improvements in both erasure effectiveness and concept retention, while significantly hardening models against adversarial recovery attacks.</p><p class="lang-vi mb-0" style="text-align: justify; font-size: 1.08rem; color: var(--ink);"><strong>Học quên khái niệm (concept unlearning)</strong> là hướng đi triển vọng nhằm giảm rủi ro sinh nội dung có hại của mô hình khuếch tán text-to-image, bằng cách xoá có chọn lọc các khái niệm không mong muốn khỏi tham số mô hình. Các phương pháp hiện có thường dùng <em>từ khoá</em> để chỉ định khái niệm cần quên. Tuy nhiên, chúng tôi chỉ ra rằng cách đặt vấn đề theo từ khoá có giới hạn nội tại: một khái niệm thị giác có nhiều chiều, có thể được diễn đạt bằng nhiều dạng văn bản khác nhau và thường chồng lấn với các khái niệm liên quan trong không gian ẩn. Vì vậy chúng tôi áp dụng góc nhìn <em>ngữ cảnh</em>: một khái niệm nên được học quên thông qua những ngữ cảnh đi cùng nó. Theo góc nhìn này, các phương pháp dựa trên từ khoá — vốn chỉ biểu diễn khái niệm mục tiêu một cách thiếu chính xác bằng một đại diện cố định — rất dễ bị vượt qua bởi các prompt diễn đạt lại (jailbreak) và dễ quên nhầm các khái niệm lân cận. Để giải quyết, chúng tôi đề xuất <strong>Diversified Unlearning</strong>, khung làm việc đưa mục tiêu xoá tiếp xúc với các biến thể embedding phụ thuộc ngữ cảnh một cách tự nhiên. Thay vì chỉ tăng cường prompt đơn giản, chúng tôi xây dựng các cặp công thức ngữ cảnh tạo ra <strong>giám sát tương phản ngầm</strong> ngay trong quá trình quên, khuyến khích mô hình tách riêng khái niệm mục tiêu và giữ nguyên các ngữ cảnh xung quanh. Qua thực nghiệm rộng trên nhiều bộ đánh giá và các baseline hiện đại, chúng tôi cho thấy việc gắn khung này như một add-on nhẹ vào các quy trình học quên sẵn có giúp cải thiện rõ rệt cả hiệu quả xoá lẫn khả năng giữ lại khái niệm, đồng thời tăng đáng kể khả năng chống lại các tấn công khôi phục.</p>
+            </div>
+        </section>
+
+        <section class="reveal my-5">
+            <h3 class="section-header">
+                <span>🎯</span>
+                <span class="lang-en d-none">Why Keywords Are Not Enough</span><span class="lang-vi">Vì Sao Từ Khoá Là Chưa Đủ</span>
+            </h3>
+<p class="lang-en d-none">Existing unlearning methods describe a visual concept by an isolated keyword (&ldquo;Barack Obama&rdquo;, &ldquo;a photo of Barack Obama&rdquo;). But a concept is not tied to a single lexical form: the same target appears across paraphrases, attributes, actions and surrounding scenes. Echoing the distributional principle <em>&ldquo;You shall know a word by the company it keeps&rdquo;</em> (Firth, 1957), we argue that <strong>one shall unlearn a concept by the company it keeps</strong>. A systematic analysis reveals two failure modes of keyword-based unlearning:</p><p class="lang-vi">Các phương pháp học quên hiện nay mô tả một khái niệm thị giác bằng một từ khoá đơn lẻ (&ldquo;Barack Obama&rdquo;, &ldquo;a photo of Barack Obama&rdquo;). Nhưng khái niệm không gắn với một dạng từ vựng duy nhất: cùng một mục tiêu xuất hiện qua nhiều cách diễn đạt, thuộc tính, hành động và bối cảnh xung quanh. Theo nguyên lý phân phối <em>&ldquo;Bạn biết một từ qua những từ đi cùng nó&rdquo;</em> (Firth, 1957), chúng tôi cho rằng <strong>cần học quên một khái niệm qua những ngữ cảnh đi cùng nó</strong>. Phân tích có hệ thống cho thấy hai điểm yếu của cách học quên theo từ khoá:</p>            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="highlight-card">
+                        <span class="highlight-icon text-primary"><i class="fa-solid fa-bullseye"></i></span>
+                        <div class="highlight-title"><span class="lang-en d-none">Observation 1 · Imprecise target representation</span><span class="lang-vi">Quan sát 1 · Biểu diễn mục tiêu thiếu chính xác</span></div>
+                        <div class="lang-en d-none hl-body">Concepts are entangled with diverse linguistic contexts, forming context-dependent regions in the text-embedding space rather than isolated points. Even after adding Gaussian noise to the embedding, the unlearned model still generates the target (e.g. top-5 detection of <em>Church</em> stays at 91% at &alpha;=0.3). A fixed keyword only suppresses the canonical token, leaving nearby variants untouched &rarr; vulnerable to <strong>prompt-rephrasing jailbreaks</strong> and noise-based recovery attacks.</div><div class="lang-vi hl-body">Khái niệm gắn với nhiều ngữ cảnh ngôn ngữ, tạo thành các vùng phụ thuộc ngữ cảnh trong không gian embedding văn bản thay vì các điểm đơn lẻ. Dù đã thêm nhiễu Gaussian vào embedding, mô hình đã học quên vẫn sinh ra mục tiêu (ví dụ top-5 nhận diện <em>Church</em> vẫn đạt 91% ở &alpha;=0.3). Từ khoá cố định chỉ chặn token gốc, để nguyên các biến thể lân cận &rarr; dễ bị <strong>jailbreak bằng prompt diễn đạt lại</strong> và tấn công khôi phục bằng nhiễu.</div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="highlight-card">
+                        <span class="highlight-icon text-danger"><i class="fa-solid fa-eraser"></i></span>
+                        <div class="highlight-title"><span class="lang-en d-none">Observation 2 · Ambiguous erasure signals in output space</span><span class="lang-vi">Quan sát 2 · Tín hiệu xoá mơ hồ ở không gian đầu ra</span></div>
+                        <div class="lang-en d-none hl-body">The reverse process also produces co-occurring objects, attributes and backgrounds. Forcing the whole predicted trajectory toward a generic anchor never says <em>which</em> visual factors belong to the target and which should be preserved, so benign context is suppressed together with the target. One-sided prompt augmentation or adversarial perturbations make this worse, leading to <strong>over-forgetting</strong>.</div><div class="lang-vi hl-body">Quá trình khuếch tán ngược còn sinh ra các đối tượng, thuộc tính và nền đi kèm. Ép toàn bộ quỹ đạo dự đoán về một anchor chung không chỉ ra được yếu tố thị giác nào thuộc về mục tiêu và yếu tố nào cần giữ, nên ngữ cảnh vô hại bị triệt tiêu cùng mục tiêu. Tăng cường prompt một chiều hoặc nhiễu đối kháng làm tình trạng này tệ hơn, dẫn đến <strong>quên quá mức</strong>.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="reveal my-5">
+            <h3 class="section-header">
+                <span>🔧</span>
+                <span class="lang-en d-none">Method: Diversified Unlearning</span><span class="lang-vi">Phương Pháp: Diversified Unlearning</span>
+            </h3>
+<p class="lang-en d-none">Diversified Unlearning pairs the target concept with natural contexts so that the context is <strong>shared</strong> by both sides of the erasure transformation. This introduces an <strong>implicit contrastive supervision</strong>: the model is pushed to change the target while keeping the context that the target and anchor have in common. It is a plug-and-play add-on with two modules, one for each family of existing methods.</p><p class="lang-vi">Diversified Unlearning ghép khái niệm mục tiêu với các ngữ cảnh tự nhiên sao cho ngữ cảnh được <strong>dùng chung</strong> ở cả hai phía của phép biến đổi xoá. Điều này tạo ra <strong>giám sát tương phản ngầm</strong>: mô hình bị đẩy thay đổi mục tiêu nhưng giữ nguyên phần ngữ cảnh mà mục tiêu và anchor có chung. Đây là add-on cắm-và-chạy gồm hai mô-đun, mỗi mô-đun dành cho một nhóm phương pháp sẵn có.</p>            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="highlight-card">
+                        <span class="highlight-icon text-primary"><i class="fa-solid fa-comments"></i></span>
+                        <div class="highlight-title"><span class="lang-en d-none">Output-based · Diversified Prompting</span><span class="lang-vi">Dựa trên đầu ra · Diversified Prompting</span></div>
+                        <div class="lang-en d-none hl-body">Instead of mapping an isolated keyword \(c_e\) to an anchor \(c_a\), we sample natural contexts \(c \sim \mathbf{C}\) and map \(\{c + c_e\} \rightarrow \{c + c_a\}\):<div class="eq">\[\min_{\theta'} \mathbb{E}\Big[ \big\|\epsilon_{\theta'}(\tau(c{+}c_e)) - \epsilon_{\theta}(\tau(c{+}c_a))\big\|_2^2 + \delta \big\|\epsilon_{\theta'}(\tau(c_p)) - \epsilon_{\theta}(\tau(c_p))\big\|_2^2 \Big]\]</div>The shared context \(c\) cancels out in the difference, so the erasure direction concentrates on <em>what to erase</em> rather than on the background (&delta; switches the preservation loss on for baselines that need it).</div><div class="lang-vi hl-body">Thay vì ánh xạ một từ khoá đơn lẻ \(c_e\) sang anchor \(c_a\), chúng tôi lấy mẫu các ngữ cảnh tự nhiên \(c \sim \mathbf{C}\) và ánh xạ \(\{c + c_e\} \rightarrow \{c + c_a\}\):<div class="eq">\[\min_{\theta'} \mathbb{E}\Big[ \big\|\epsilon_{\theta'}(\tau(c{+}c_e)) - \epsilon_{\theta}(\tau(c{+}c_a))\big\|_2^2 + \delta \big\|\epsilon_{\theta'}(\tau(c_p)) - \epsilon_{\theta}(\tau(c_p))\big\|_2^2 \Big]\]</div>Ngữ cảnh chung \(c\) triệt tiêu trong phần hiệu, nên hướng xoá tập trung vào <em>thứ cần xoá</em> thay vì phần nền (&delta; bật loss giữ lại cho các baseline cần đến).</div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="highlight-card">
+                        <span class="highlight-icon text-success"><i class="fa-solid fa-sliders"></i></span>
+                        <div class="highlight-title"><span class="lang-en d-none">Attention-based · Diversified Embedding Mixup</span><span class="lang-vi">Dựa trên attention · Diversified Embedding Mixup</span></div>
+                        <div class="lang-en d-none hl-body">Naively adding context to attention-based editing (UCE, MACE) causes severe over-forgetting because the text encoder is biased by the context. We instead interpolate <strong>token-wise</strong>, only at the target token slots \(\mathcal{I}(c_e)\), with \(\alpha\tau(c_e)^i + (1-\alpha)\tau(c)^i\) averaged over \(c \in \mathbf{C}\). With &alpha; close to 1 the target identity is retained while injecting just enough contextual diversity. The mixed contexts are also added to the <em>preservation</em> set, so surrounding features are explicitly protected.</div><div class="lang-vi hl-body">Thêm ngữ cảnh một cách ngây thơ vào các phương pháp chỉnh sửa attention (UCE, MACE) gây quên quá mức vì bộ mã hoá văn bản bị lệch bởi ngữ cảnh. Thay vào đó chúng tôi nội suy <strong>theo từng token</strong>, chỉ tại các vị trí token của mục tiêu \(\mathcal{I}(c_e)\), với \(\alpha\tau(c_e)^i + (1-\alpha)\tau(c)^i\) lấy trung bình trên \(c \in \mathbf{C}\). Khi &alpha; gần 1, định danh mục tiêu được giữ lại trong khi vẫn đưa vào vừa đủ đa dạng ngữ cảnh. Các ngữ cảnh đã trộn cũng được thêm vào tập <em>giữ lại</em> để bảo vệ rõ ràng các đặc trưng xung quanh.</div>
+                    </div>
+                </div>
+            </div>
+<p class="lang-en d-none"><strong>Context-set construction.</strong> For every target concept an advanced LLM (GPT-4o / GPT-5) writes a small set of natural prompts following a single unified prompt-design rule &mdash; e.g. everyday actions for celebrities (&ldquo;a photo of Henry Cavill smiling&rdquo;), subject variations that keep the style descriptor for artistic styles, and diverse subjects blended with the keyword for explicit concepts. A recognition model filters the generated images, so no hyper-parameter tuning is needed per concept.</p><p class="lang-vi"><strong>Xây dựng tập ngữ cảnh.</strong> Với mỗi khái niệm mục tiêu, một LLM mạnh (GPT-4o / GPT-5) viết một tập nhỏ các prompt tự nhiên theo một quy tắc thiết kế prompt thống nhất &mdash; ví dụ hành động thường ngày cho người nổi tiếng (&ldquo;a photo of Henry Cavill smiling&rdquo;), biến thể chủ thể nhưng giữ mô tả phong cách cho phong cách nghệ thuật, và các chủ thể đa dạng kết hợp với từ khoá cho khái niệm nhạy cảm. Một mô hình nhận dạng lọc ảnh sinh ra, nên không cần chỉnh siêu tham số riêng cho từng khái niệm.</p>
+        </section>
+
+        <section class="reveal my-5">
+            <h3 class="section-header">
+                <span>✨</span>
+                <span class="lang-en d-none">Quantitative &amp; Qualitative Results</span><span class="lang-vi">Kết Quả Định Lượng &amp; Định Tính</span>
+            </h3>
+            <div class="figure-box mb-4">
+                <img src="images/fig2_qualitative.jpg" alt="Qualitative comparison across UCE, ESD, AP, AGE, ACE and their diversified versions" class="figure-hover img-fluid" loading="lazy"
+                    onclick="openLightbox('images/fig2_qualitative.jpg', 'Figure 2: Diversified variants vs. keyword-based baselines.')">
+                <div class="figure-caption">
+                    <strong class="lang-en d-none">Figure 2:</strong><strong class="lang-vi">Hình 2:</strong>
+                    <span class="lang-en d-none">Diversified variants vs. their keyword-based baselines on four settings: celebrity, object, copyrighted character and explicit content. &#10003; = target erased, &#10007; = target still generated. For &ldquo;Mario&rdquo; the character identity disappears while peripheral style primitives such as colours and textures are kept &mdash; a <em>smooth erasure</em> rather than a destructive &ldquo;hard wash&rdquo;.</span><span class="lang-vi">Các biến thể diversified so với baseline dựa trên từ khoá ở bốn kịch bản: người nổi tiếng, đồ vật, nhân vật bản quyền và nội dung nhạy cảm. &#10003; = mục tiêu đã bị xoá, &#10007; = mục tiêu vẫn được sinh ra. Với &ldquo;Mario&rdquo;, định danh nhân vật biến mất nhưng các yếu tố phong cách phụ như màu sắc và kết cấu vẫn được giữ &mdash; <em>xoá mượt</em> thay vì &ldquo;tẩy sạch&rdquo; phá huỷ.</span>
+                </div>
+            </div>
+            <div class="mb-4">
+                <h5 class="font-weight-bold mb-2"><span class="lang-en d-none">Table 1: Celebrity erasure, 10 celebrities simultaneously</span><span class="lang-vi">Bảng 1: Xoá người nổi tiếng, 10 người cùng lúc</span></h5>
+                <div class="result-table-wrap">
+                    <div class="table-responsive">
+                        <table class="table result-table">
+                            <thead><tr><th class="model-cell" rowspan="2">Method</th><th colspan="2">Erasure</th><th colspan="4">Preservation</th></tr><tr><th>CLIP-i &darr;</th><th>GPT &darr;</th><th>LPIPS &darr;</th><th>CLIP-i &uarr;</th><th>CLIP-t &uarr;</th><th>GPT &uarr;</th></tr></thead>
+                            <tbody><tr><td class="model-cell">ESD</td><td>65.98</td><td>11.78</td><td>0.66</td><td>62.59</td><td>24.25</td><td>31.68</td></tr><tr class="ours-row"><td class="model-cell">Diversified-ESD</td><td>62.58</td><td>5.50</td><td>0.63</td><td>69.73</td><td>26.28</td><td>46.15</td></tr><tr><td class="model-cell">UCE</td><td>60.59</td><td>4.48</td><td>0.65</td><td>62.90</td><td>23.97</td><td>31.42</td></tr><tr class="ours-row"><td class="model-cell">Diversified-UCE</td><td>58.55</td><td>2.83</td><td>0.64</td><td>66.92</td><td>24.57</td><td>24.40</td></tr><tr><td class="model-cell">AP</td><td>61.14</td><td>13.55</td><td>0.79</td><td>49.31</td><td>21.34</td><td>14.97</td></tr><tr class="ours-row"><td class="model-cell">Diversified-AP</td><td>60.78</td><td>6.10</td><td>0.68</td><td>70.50</td><td>27.09</td><td>51.15</td></tr><tr><td class="model-cell">AGE</td><td>60.68</td><td>18.84</td><td>0.83</td><td>42.31</td><td>17.96</td><td>6.98</td></tr><tr class="ours-row"><td class="model-cell">Diversified-AGE</td><td>58.84</td><td>12.59</td><td>0.71</td><td>64.20</td><td>26.15</td><td>12.59</td></tr><tr><td class="model-cell">ACE</td><td>74.69</td><td>29.45</td><td>0.46</td><td>84.64</td><td>29.92</td><td>76.72</td></tr><tr class="ours-row"><td class="model-cell">Diversified-ACE</td><td>68.67</td><td>13.53</td><td>0.39</td><td>85.91</td><td>28.88</td><td>75.05</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+                <p class="small text-muted mt-2 mb-0"><span class="lang-en d-none">GPT-Score is an identity-focused score computed with Qwen2.5-VL-72B (0–100). Diversified-ESD and -AP roughly halve the erasure GPT-Score while raising preservation.</span><span class="lang-vi">GPT-Score là điểm tập trung vào định danh, tính bằng Qwen2.5-VL-72B (0–100). Diversified-ESD và -AP giảm khoảng một nửa GPT-Score khi xoá, đồng thời tăng khả năng giữ lại.</span></p>
+            </div>
+            <div class="mb-4">
+                <h5 class="font-weight-bold mb-2"><span class="lang-en d-none">Table 2: Explicit-content (nudity) erasure</span><span class="lang-vi">Bảng 2: Xoá nội dung nhạy cảm (nudity)</span></h5>
+                <div class="result-table-wrap">
+                    <div class="table-responsive">
+                        <table class="table result-table">
+                            <thead><tr><th class="model-cell" rowspan="2">Method</th><th>I2P · NudeNet</th><th colspan="2">MS-COCO 30K</th></tr><tr><th>Total detections &darr;</th><th>FID &darr;</th><th>CLIP &uarr;</th></tr></thead>
+                            <tbody><tr><td class="model-cell">SD v1.4</td><td>743</td><td>14.04</td><td>31.34</td></tr><tr><td class="model-cell">UCE</td><td>253</td><td>14.85</td><td>31.27</td></tr><tr class="ours-row"><td class="model-cell">Diversified-UCE</td><td>196</td><td>14.87</td><td>29.30</td></tr><tr><td class="model-cell">ESD</td><td>377</td><td>14.71</td><td>30.82</td></tr><tr class="ours-row"><td class="model-cell">Diversified-ESD</td><td>212</td><td>14.05</td><td>31.06</td></tr><tr><td class="model-cell">AP</td><td>355</td><td>14.71</td><td>30.98</td></tr><tr class="ours-row"><td class="model-cell">Diversified-AP</td><td>172</td><td>14.21</td><td>31.01</td></tr><tr><td class="model-cell">AGE</td><td>300</td><td>14.41</td><td>30.99</td></tr><tr class="ours-row"><td class="model-cell">Diversified-AGE</td><td>244</td><td>13.82</td><td>31.00</td></tr><tr><td class="model-cell">ACE</td><td>39</td><td>14.63</td><td>30.85</td></tr><tr class="ours-row"><td class="model-cell">Diversified-ACE</td><td>26</td><td>14.85</td><td>30.60</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+                <p class="small text-muted mt-2 mb-0"><span class="lang-en d-none">Diversified-ESD and -AP cut total nudity detections by 44% and 52% relative to their baselines while keeping COCO-30K FID / CLIP close to the original SD v1.4.</span><span class="lang-vi">Diversified-ESD và -AP giảm tổng số phát hiện nudity lần lượt 44% và 52% so với baseline, trong khi FID / CLIP trên COCO-30K vẫn gần với SD v1.4 gốc.</span></p>
+            </div>
+
+        </section>
+
+        <section class="reveal my-5">
+            <h3 class="section-header">
+                <span>🛡️</span>
+                <span class="lang-en d-none">Robustness against Recovery Attacks</span><span class="lang-vi">Độ Bền Vững Trước Tấn Công Khôi Phục</span>
+            </h3>
+<p class="lang-en d-none">Keyword-based unlearning often only <em>steers generation away</em> from the concept and leaves it recoverable. Because Diversified Unlearning removes the concept across its contextual company, it behaves more like <em>destruction-based removal</em>. We test three attacks: <strong>Ring-A-Bell</strong> adversarial prompts (nudity), <strong>Indirect Recovery (IR)</strong> through high-context prompts that omit the name &ldquo;Mario&rdquo;, and <strong>Noise-based attacks</strong> on the ten-celebrity erasure models.</p><p class="lang-vi">Học quên theo từ khoá thường chỉ <em>lái việc sinh ảnh tránh xa</em> khái niệm và để lại khả năng khôi phục. Vì Diversified Unlearning gỡ khái niệm khỏi toàn bộ ngữ cảnh đi cùng, nó hoạt động giống <em>gỡ bỏ theo kiểu phá huỷ</em> hơn. Chúng tôi thử ba loại tấn công: prompt đối kháng <strong>Ring-A-Bell</strong> (nudity), <strong>Indirect Recovery (IR)</strong> bằng prompt giàu ngữ cảnh nhưng không nhắc tên &ldquo;Mario&rdquo;, và <strong>tấn công bằng nhiễu</strong> trên các mô hình xoá mười người nổi tiếng.</p>            <div class="mb-4">
+                <h5 class="font-weight-bold mb-2"><span class="lang-en d-none">Table 3: Ring-A-Bell (ASR) and Indirect Recovery (GPT-Score)</span><span class="lang-vi">Bảng 3: Ring-A-Bell (ASR) và Indirect Recovery (GPT-Score)</span></h5>
+                <div class="result-table-wrap">
+                    <div class="table-responsive">
+                        <table class="table result-table">
+                            <thead><tr><th class="model-cell" rowspan="2">Method</th><th colspan="3">Ring-A-Bell ASR &darr;</th><th>IR GPT &darr;</th></tr><tr><th>K16</th><th>K38</th><th>K77</th><th>Mario</th></tr></thead>
+                            <tbody><tr><td class="model-cell">AP</td><td>46.32</td><td>48.42</td><td>54.47</td><td>38.13</td></tr><tr class="ours-row"><td class="model-cell">Diversified-AP</td><td>38.95</td><td>41.05</td><td>38.95</td><td>33.75</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+                
+            </div>
+            <div class="mb-4">
+                <h5 class="font-weight-bold mb-2"><span class="lang-en d-none">Table 4: Noise-based attack on ten-celebrity erasure (GPT-Score)</span><span class="lang-vi">Bảng 4: Tấn công bằng nhiễu trên mô hình xoá mười người nổi tiếng (GPT-Score)</span></h5>
+                <div class="result-table-wrap">
+                    <div class="table-responsive">
+                        <table class="table result-table">
+                            <thead><tr><th class="model-cell"></th><th>AP &darr;</th><th>ESD &darr;</th><th>AGE &darr;</th><th>UCE &darr;</th></tr></thead>
+                            <tbody><tr><td class="model-cell">Baseline</td><td>39.63</td><td>28.19</td><td>33.00</td><td>2.00</td></tr><tr class="ours-row"><td class="model-cell">Diversified</td><td>14.94</td><td>11.75</td><td>29.81</td><td>1.13</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+                
+            </div>
+            <div class="figure-box mb-4">
+                <img src="images/fig5_trajectory.png" alt="Intermediate generations of AP and Diversified-AP under normal prompting and noise-based attacks" class="figure-hover img-fluid" loading="lazy"
+                    onclick="openLightbox('images/fig5_trajectory.png', 'Figure 3: Intermediate generations, AP vs. Diversified-AP.')">
+                <div class="figure-caption">
+                    <strong class="lang-en d-none">Figure 3:</strong><strong class="lang-vi">Hình 3:</strong>
+                    <span class="lang-en d-none">Intermediate generations for &ldquo;Margot Robbie&rdquo; erased with AP vs. Diversified-AP. Both look erased in the final output under normal prompts, but under a noise-based attack the AP trajectory reconstructs the target&rsquo;s latent features much more clearly &mdash; a sign of non-robust unlearning.</span><span class="lang-vi">Các bước sinh trung gian khi xoá &ldquo;Margot Robbie&rdquo; bằng AP và Diversified-AP. Cả hai đều có vẻ đã xoá ở ảnh cuối với prompt thường, nhưng dưới tấn công nhiễu, quỹ đạo của AP tái tạo đặc trưng ẩn của mục tiêu rõ hơn nhiều &mdash; dấu hiệu của việc học quên thiếu bền vững.</span>
+                </div>
+            </div>
+
+        </section>
+
+        <section class="reveal my-5">
+            <h3 class="section-header">
+                <span>🏁</span>
+                <span class="lang-en d-none">Conclusion</span><span class="lang-vi">Kết Luận</span>
+            </h3>
+<p class="lang-en d-none" style="text-align: justify; font-size: 1.05rem;">We revisit the brittleness of keyword-based concept unlearning in text-to-image models. Guided by the principle that a concept should be unlearned through the company it keeps, <strong>Diversified Unlearning</strong> injects implicit contrastive supervision into the unlearning pipeline via structured context pairs. Through two plug-and-play modules &mdash; <em>Diversified Prompting</em> and <em>Diversified Embedding Mixup</em> &mdash; it delivers stronger erasure, cleaner retention of benign neighbours and improved robustness against advanced recovery attacks, without architectural overhead.</p><p class="lang-vi" style="text-align: justify; font-size: 1.05rem;">Chúng tôi xem xét lại tính mong manh của học quên khái niệm dựa trên từ khoá trong các mô hình text-to-image. Dựa trên nguyên lý một khái niệm nên được học quên qua những ngữ cảnh đi cùng nó, <strong>Diversified Unlearning</strong> đưa giám sát tương phản ngầm vào quy trình học quên thông qua các cặp ngữ cảnh có cấu trúc. Với hai mô-đun cắm-và-chạy &mdash; <em>Diversified Prompting</em> và <em>Diversified Embedding Mixup</em> &mdash; phương pháp cho khả năng xoá mạnh hơn, giữ lại sạch hơn các khái niệm lân cận vô hại và bền vững hơn trước các tấn công khôi phục tiên tiến, mà không thêm chi phí kiến trúc.</p>
+        </section>
+
+        <section class="reveal my-5" id="bibtex-section">
+            <h3 class="section-header">
+                <span>📚</span>
+                <span class="lang-en d-none">Citation</span><span class="lang-vi">Trích Dẫn Bài Báo (BibTeX)</span>
+            </h3>
+            <p><span class="lang-en d-none">If you find this work useful, please cite:</span><span class="lang-vi">Nếu nghiên cứu này hữu ích cho công việc của bạn, xin vui lòng trích dẫn:</span></p>
+            <div class="bibtex-box">
+                <button type="button" class="copy-btn" onclick="copyBibtex()">
+                    <i class="fa-regular fa-copy"></i>
+                    <span id="copy-btn-text">Copy BibTeX</span>
+                </button>
+                <pre id="bibtex-code" style="margin: 0; color: inherit; font-family: inherit; font-size: inherit;">@inproceedings{pham2027diversified,
+  title     = {Unlearn in Context: Contrastive Alignment via Diversified Supervision for Diffusion Models},
+  author    = {Hao Pham and Duy Truong and Duy Khanh Dinh and Cuong Tien Nguyen and Tuan Anh Bui},
+  booktitle = {IEEE/CVF Winter Conference on Applications of Computer Vision (WACV)},
+  year      = {2027},
+}</pre>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="mt-5 pt-4 pb-5 border-top text-center text-muted"
+            style="border-top-color: var(--hairline) !important;">
+            <div class="d-flex justify-content-center align-items-center flex-wrap gap-4 mb-3">
+                <span class="font-weight-bold" style="color: var(--accent); font-size: 1.1rem;">VNPT AI</span>
+            </div>
+            <p class="small mb-1"><span class="lang-en d-none">Bilingual project page for a VNPT AI research publication.</span><span class="lang-vi">Trang giới thiệu công trình nghiên cứu khoa học song ngữ của VNPT AI.</span></p>
+            <p class="small text-muted mb-0">
+                &copy; 2026 Authors &amp; Collaborating Institutions. All rights reserved.
+            </p>
+        </footer>
+
+    </div>
+
+    <!-- Image Lightbox Modal -->
+    <div id="lightbox" class="lightbox-modal" onclick="closeLightbox(event)">
+        <span class="lightbox-close" onclick="closeLightbox(event)">&times;</span>
+        <img id="lightbox-img" class="lightbox-content" src="" alt="Enlarged photo">
+        <div id="lightbox-caption" class="lightbox-caption"></div>
+    </div>
+
+    <!-- JavaScript for Language Switcher, Lightbox, and Scroll Effects -->
+    <script>
+        // Language switching logic
+        function setLanguage(lang) {
+            const isVi = (lang === 'vi');
+
+            // Toggle active button state
+            document.getElementById('btn-lang-vi').classList.toggle('active', isVi);
+            document.getElementById('btn-lang-en').classList.toggle('active', !isVi);
+
+            // Toggle text visibility
+            const viElements = document.querySelectorAll('.lang-vi');
+            const enElements = document.querySelectorAll('.lang-en');
+
+            viElements.forEach(el => {
+                if (isVi) {
+                    el.classList.remove('d-none');
+                } else {
+                    el.classList.add('d-none');
+                }
+            });
+
+            enElements.forEach(el => {
+                if (!isVi) {
+                    el.classList.remove('d-none');
+                } else {
+                    el.classList.add('d-none');
+                }
+            });
+
+            // Update HTML lang attribute
+            document.documentElement.lang = lang;
+
+            // Save preference to localStorage
+            try {
+                localStorage.setItem('vnptai_paper_lang', lang);
+            } catch (e) { }
+        }
+
+        // Initialize language from localStorage or default to Vietnamese
+        document.addEventListener('DOMContentLoaded', () => {
+            let savedLang = 'vi';
+            try {
+                savedLang = localStorage.getItem('vnptai_paper_lang') || 'vi';
+            } catch (e) { }
+            setLanguage(savedLang);
+
+            // Scroll reveal observer
+            const reveals = document.querySelectorAll('.reveal');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('in-view');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            reveals.forEach(el => observer.observe(el));
+        });
+
+        // Lightbox functions
+        function openLightbox(src, caption) {
+            const modal = document.getElementById('lightbox');
+            const img = document.getElementById('lightbox-img');
+            const cap = document.getElementById('lightbox-caption');
+            img.src = src;
+            cap.innerText = caption;
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox(e) {
+            if (e.target.id === 'lightbox' || e.target.classList.contains('lightbox-close')) {
+                const modal = document.getElementById('lightbox');
+                modal.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        // Close on ESC key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('lightbox');
+                if (modal.classList.contains('active')) {
+                    modal.classList.remove('active');
+                    document.body.style.overflow = 'auto';
+                }
+            }
+        });
+
+        // Copy BibTeX functionality
+        function copyBibtex() {
+            const code = document.getElementById('bibtex-code').innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                const btnText = document.getElementById('copy-btn-text');
+                const originalText = btnText.innerText;
+                btnText.innerHTML = '<i class="fa-solid fa-check text-success"></i> Copied!';
+                setTimeout(() => {
+                    btnText.innerText = originalText;
+                }, 2000);
+            }).catch(err => {
+                console.error('Copy failed', err);
+            });
+        }
+    </script>
+</body>
+
+</html>
